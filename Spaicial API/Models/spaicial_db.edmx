@@ -1,0 +1,797 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="spaicial_dbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ApiKey">
+          <Key>
+            <PropertyRef Name="apiKeyId" />
+          </Key>
+          <Property Name="apiKeyId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="keyValue" Type="varchar" MaxLength="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Bias">
+          <Key>
+            <PropertyRef Name="predictedZoneId" />
+            <PropertyRef Name="predictedDataSubjectId" />
+          </Key>
+          <Property Name="predictedZoneId" Type="int" Nullable="false" />
+          <Property Name="predictedDataSubjectId" Type="int" Nullable="false" />
+          <Property Name="multiValue" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSubject">
+          <Key>
+            <PropertyRef Name="dataSubjectId" />
+          </Key>
+          <Property Name="dataSubjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="label" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="minValue" Type="float" Nullable="false" />
+          <Property Name="maxValue" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Feature">
+          <Key>
+            <PropertyRef Name="predictedZoneId" />
+            <PropertyRef Name="predictedDataSubjectId" />
+            <PropertyRef Name="sourceZoneId" />
+            <PropertyRef Name="sourceDataSubjectId" />
+            <PropertyRef Name="expValue" />
+          </Key>
+          <Property Name="predictedZoneId" Type="int" Nullable="false" />
+          <Property Name="predictedDataSubjectId" Type="int" Nullable="false" />
+          <Property Name="sourceZoneId" Type="int" Nullable="false" />
+          <Property Name="sourceDataSubjectId" Type="int" Nullable="false" />
+          <Property Name="expValue" Type="float" Nullable="false" />
+          <Property Name="multiValue" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ScoutData">
+          <Key>
+            <PropertyRef Name="scoutDataId" />
+          </Key>
+          <Property Name="scoutDataId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="apiKeyId" Type="int" Nullable="false" />
+          <Property Name="locationPoint" Type="geometry" Nullable="false" />
+          <Property Name="dateTimeCollected" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ScoutDataPart">
+          <Key>
+            <PropertyRef Name="scoutDataId" />
+            <PropertyRef Name="dataSubjectId" />
+          </Key>
+          <Property Name="scoutDataId" Type="int" Nullable="false" />
+          <Property Name="dataSubjectId" Type="int" Nullable="false" />
+          <Property Name="dataValue" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StationData">
+          <Key>
+            <PropertyRef Name="stationDataId" />
+          </Key>
+          <Property Name="stationDataId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="apiKeyId" Type="int" Nullable="false" />
+          <Property Name="zoneId" Type="int" Nullable="false" />
+          <Property Name="dateTimeCollected" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StationDataPart">
+          <Key>
+            <PropertyRef Name="stationDataId" />
+            <PropertyRef Name="dataSubjectId" />
+          </Key>
+          <Property Name="stationDataId" Type="int" Nullable="false" />
+          <Property Name="dataSubjectId" Type="int" Nullable="false" />
+          <Property Name="dataValue" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Zone">
+          <Key>
+            <PropertyRef Name="zoneId" />
+          </Key>
+          <Property Name="zoneId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="apiKeyId" Type="int" Nullable="false" />
+          <Property Name="locationArea" Type="geometry" Nullable="false" />
+          <Property Name="isPredicted" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FKBias388856">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="Bias" Type="Self.Bias" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="Bias">
+              <PropertyRef Name="predictedDataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKBias924925">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="Bias" Type="Self.Bias" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="Bias">
+              <PropertyRef Name="predictedZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature399254">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="sourceZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature548629">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="predictedZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature899318">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="sourceDataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature987439">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="predictedDataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKScoutData158528">
+          <End Role="ApiKey" Type="Self.ApiKey" Multiplicity="1" />
+          <End Role="ScoutData" Type="Self.ScoutData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiKey">
+              <PropertyRef Name="apiKeyId" />
+            </Principal>
+            <Dependent Role="ScoutData">
+              <PropertyRef Name="apiKeyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKScoutDataP852470">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="ScoutDataPart" Type="Self.ScoutDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="ScoutDataPart">
+              <PropertyRef Name="dataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKScoutDataP894455">
+          <End Role="ScoutData" Type="Self.ScoutData" Multiplicity="1" />
+          <End Role="ScoutDataPart" Type="Self.ScoutDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ScoutData">
+              <PropertyRef Name="scoutDataId" />
+            </Principal>
+            <Dependent Role="ScoutDataPart">
+              <PropertyRef Name="scoutDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat572071">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="StationData" Type="Self.StationData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="StationData">
+              <PropertyRef Name="zoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat787759">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="StationDataPart" Type="Self.StationDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="StationDataPart">
+              <PropertyRef Name="dataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat863877">
+          <End Role="StationData" Type="Self.StationData" Multiplicity="1" />
+          <End Role="StationDataPart" Type="Self.StationDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StationData">
+              <PropertyRef Name="stationDataId" />
+            </Principal>
+            <Dependent Role="StationDataPart">
+              <PropertyRef Name="stationDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat922292">
+          <End Role="ApiKey" Type="Self.ApiKey" Multiplicity="1" />
+          <End Role="StationData" Type="Self.StationData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiKey">
+              <PropertyRef Name="apiKeyId" />
+            </Principal>
+            <Dependent Role="StationData">
+              <PropertyRef Name="apiKeyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKZone588634">
+          <End Role="ApiKey" Type="Self.ApiKey" Multiplicity="1" />
+          <End Role="Zone" Type="Self.Zone" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiKey">
+              <PropertyRef Name="apiKeyId" />
+            </Principal>
+            <Dependent Role="Zone">
+              <PropertyRef Name="apiKeyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="spaicial_dbModelStoreContainer">
+          <EntitySet Name="ApiKey" EntityType="Self.ApiKey" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="Bias" EntityType="Self.Bias" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="DataSubject" EntityType="Self.DataSubject" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="Feature" EntityType="Self.Feature" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="ScoutData" EntityType="Self.ScoutData" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="ScoutDataPart" EntityType="Self.ScoutDataPart" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="StationData" EntityType="Self.StationData" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="StationDataPart" EntityType="Self.StationDataPart" Schema="spaicial_db_admin" store:Type="Tables" />
+          <EntitySet Name="Zone" EntityType="Self.Zone" Schema="spaicial_db_admin" store:Type="Tables" />
+          <AssociationSet Name="FKBias388856" Association="Self.FKBias388856">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="Bias" EntitySet="Bias" />
+          </AssociationSet>
+          <AssociationSet Name="FKBias924925" Association="Self.FKBias924925">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="Bias" EntitySet="Bias" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature399254" Association="Self.FKFeature399254">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature548629" Association="Self.FKFeature548629">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature899318" Association="Self.FKFeature899318">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature987439" Association="Self.FKFeature987439">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKScoutData158528" Association="Self.FKScoutData158528">
+            <End Role="ApiKey" EntitySet="ApiKey" />
+            <End Role="ScoutData" EntitySet="ScoutData" />
+          </AssociationSet>
+          <AssociationSet Name="FKScoutDataP852470" Association="Self.FKScoutDataP852470">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="ScoutDataPart" EntitySet="ScoutDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKScoutDataP894455" Association="Self.FKScoutDataP894455">
+            <End Role="ScoutData" EntitySet="ScoutData" />
+            <End Role="ScoutDataPart" EntitySet="ScoutDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat572071" Association="Self.FKStationDat572071">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="StationData" EntitySet="StationData" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat787759" Association="Self.FKStationDat787759">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="StationDataPart" EntitySet="StationDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat863877" Association="Self.FKStationDat863877">
+            <End Role="StationData" EntitySet="StationData" />
+            <End Role="StationDataPart" EntitySet="StationDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat922292" Association="Self.FKStationDat922292">
+            <End Role="ApiKey" EntitySet="ApiKey" />
+            <End Role="StationData" EntitySet="StationData" />
+          </AssociationSet>
+          <AssociationSet Name="FKZone588634" Association="Self.FKZone588634">
+            <End Role="ApiKey" EntitySet="ApiKey" />
+            <End Role="Zone" EntitySet="Zone" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="spaicial_dbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="ApiKey">
+          <Key>
+            <PropertyRef Name="apiKeyId" />
+          </Key>
+          <Property Name="apiKeyId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="keyValue" Type="String" MaxLength="7" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="ScoutData" Relationship="Self.FKScoutData158528" FromRole="ApiKey" ToRole="ScoutData" />
+          <NavigationProperty Name="StationData" Relationship="Self.FKStationDat922292" FromRole="ApiKey" ToRole="StationData" />
+          <NavigationProperty Name="Zone" Relationship="Self.FKZone588634" FromRole="ApiKey" ToRole="Zone" />
+        </EntityType>
+        <EntityType Name="Bias">
+          <Key>
+            <PropertyRef Name="predictedZoneId" />
+            <PropertyRef Name="predictedDataSubjectId" />
+          </Key>
+          <Property Name="predictedZoneId" Type="Int32" Nullable="false" />
+          <Property Name="predictedDataSubjectId" Type="Int32" Nullable="false" />
+          <Property Name="multiValue" Type="Double" Nullable="false" />
+          <NavigationProperty Name="DataSubject" Relationship="Self.FKBias388856" FromRole="Bias" ToRole="DataSubject" />
+          <NavigationProperty Name="Zone" Relationship="Self.FKBias924925" FromRole="Bias" ToRole="Zone" />
+        </EntityType>
+        <EntityType Name="DataSubject">
+          <Key>
+            <PropertyRef Name="dataSubjectId" />
+          </Key>
+          <Property Name="dataSubjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="label" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="minValue" Type="Double" Nullable="false" />
+          <Property Name="maxValue" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Bias" Relationship="Self.FKBias388856" FromRole="DataSubject" ToRole="Bias" />
+          <NavigationProperty Name="Feature" Relationship="Self.FKFeature899318" FromRole="DataSubject" ToRole="Feature" />
+          <NavigationProperty Name="Feature1" Relationship="Self.FKFeature987439" FromRole="DataSubject" ToRole="Feature" />
+          <NavigationProperty Name="ScoutDataPart" Relationship="Self.FKScoutDataP852470" FromRole="DataSubject" ToRole="ScoutDataPart" />
+          <NavigationProperty Name="StationDataPart" Relationship="Self.FKStationDat787759" FromRole="DataSubject" ToRole="StationDataPart" />
+        </EntityType>
+        <EntityType Name="Feature">
+          <Key>
+            <PropertyRef Name="predictedZoneId" />
+            <PropertyRef Name="predictedDataSubjectId" />
+            <PropertyRef Name="sourceZoneId" />
+            <PropertyRef Name="sourceDataSubjectId" />
+            <PropertyRef Name="expValue" />
+          </Key>
+          <Property Name="predictedZoneId" Type="Int32" Nullable="false" />
+          <Property Name="predictedDataSubjectId" Type="Int32" Nullable="false" />
+          <Property Name="sourceZoneId" Type="Int32" Nullable="false" />
+          <Property Name="sourceDataSubjectId" Type="Int32" Nullable="false" />
+          <Property Name="expValue" Type="Double" Nullable="false" />
+          <Property Name="multiValue" Type="Double" Nullable="false" />
+          <NavigationProperty Name="DataSubject" Relationship="Self.FKFeature899318" FromRole="Feature" ToRole="DataSubject" />
+          <NavigationProperty Name="DataSubject1" Relationship="Self.FKFeature987439" FromRole="Feature" ToRole="DataSubject" />
+          <NavigationProperty Name="Zone" Relationship="Self.FKFeature399254" FromRole="Feature" ToRole="Zone" />
+          <NavigationProperty Name="Zone1" Relationship="Self.FKFeature548629" FromRole="Feature" ToRole="Zone" />
+        </EntityType>
+        <EntityType Name="ScoutData">
+          <Key>
+            <PropertyRef Name="scoutDataId" />
+          </Key>
+          <Property Name="scoutDataId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="apiKeyId" Type="Int32" Nullable="false" />
+          <Property Name="locationPoint" Type="Geometry" Nullable="false" />
+          <Property Name="dateTimeCollected" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ApiKey" Relationship="Self.FKScoutData158528" FromRole="ScoutData" ToRole="ApiKey" />
+          <NavigationProperty Name="ScoutDataPart" Relationship="Self.FKScoutDataP894455" FromRole="ScoutData" ToRole="ScoutDataPart" />
+        </EntityType>
+        <EntityType Name="ScoutDataPart">
+          <Key>
+            <PropertyRef Name="scoutDataId" />
+            <PropertyRef Name="dataSubjectId" />
+          </Key>
+          <Property Name="scoutDataId" Type="Int32" Nullable="false" />
+          <Property Name="dataSubjectId" Type="Int32" Nullable="false" />
+          <Property Name="dataValue" Type="Double" Nullable="false" />
+          <NavigationProperty Name="DataSubject" Relationship="Self.FKScoutDataP852470" FromRole="ScoutDataPart" ToRole="DataSubject" />
+          <NavigationProperty Name="ScoutData" Relationship="Self.FKScoutDataP894455" FromRole="ScoutDataPart" ToRole="ScoutData" />
+        </EntityType>
+        <EntityType Name="StationData">
+          <Key>
+            <PropertyRef Name="stationDataId" />
+          </Key>
+          <Property Name="stationDataId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="apiKeyId" Type="Int32" Nullable="false" />
+          <Property Name="zoneId" Type="Int32" Nullable="false" />
+          <Property Name="dateTimeCollected" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ApiKey" Relationship="Self.FKStationDat922292" FromRole="StationData" ToRole="ApiKey" />
+          <NavigationProperty Name="Zone" Relationship="Self.FKStationDat572071" FromRole="StationData" ToRole="Zone" />
+          <NavigationProperty Name="StationDataPart" Relationship="Self.FKStationDat863877" FromRole="StationData" ToRole="StationDataPart" />
+        </EntityType>
+        <EntityType Name="StationDataPart">
+          <Key>
+            <PropertyRef Name="stationDataId" />
+            <PropertyRef Name="dataSubjectId" />
+          </Key>
+          <Property Name="stationDataId" Type="Int32" Nullable="false" />
+          <Property Name="dataSubjectId" Type="Int32" Nullable="false" />
+          <Property Name="dataValue" Type="Double" Nullable="false" />
+          <NavigationProperty Name="DataSubject" Relationship="Self.FKStationDat787759" FromRole="StationDataPart" ToRole="DataSubject" />
+          <NavigationProperty Name="StationData" Relationship="Self.FKStationDat863877" FromRole="StationDataPart" ToRole="StationData" />
+        </EntityType>
+        <EntityType Name="Zone">
+          <Key>
+            <PropertyRef Name="zoneId" />
+          </Key>
+          <Property Name="zoneId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="apiKeyId" Type="Int32" Nullable="false" />
+          <Property Name="locationArea" Type="Geometry" Nullable="false" />
+          <Property Name="isPredicted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="ApiKey" Relationship="Self.FKZone588634" FromRole="Zone" ToRole="ApiKey" />
+          <NavigationProperty Name="Bias" Relationship="Self.FKBias924925" FromRole="Zone" ToRole="Bias" />
+          <NavigationProperty Name="Feature" Relationship="Self.FKFeature399254" FromRole="Zone" ToRole="Feature" />
+          <NavigationProperty Name="Feature1" Relationship="Self.FKFeature548629" FromRole="Zone" ToRole="Feature" />
+          <NavigationProperty Name="StationData" Relationship="Self.FKStationDat572071" FromRole="Zone" ToRole="StationData" />
+        </EntityType>
+        <Association Name="FKScoutData158528">
+          <End Role="ApiKey" Type="Self.ApiKey" Multiplicity="1" />
+          <End Role="ScoutData" Type="Self.ScoutData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiKey">
+              <PropertyRef Name="apiKeyId" />
+            </Principal>
+            <Dependent Role="ScoutData">
+              <PropertyRef Name="apiKeyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat922292">
+          <End Role="ApiKey" Type="Self.ApiKey" Multiplicity="1" />
+          <End Role="StationData" Type="Self.StationData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiKey">
+              <PropertyRef Name="apiKeyId" />
+            </Principal>
+            <Dependent Role="StationData">
+              <PropertyRef Name="apiKeyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKZone588634">
+          <End Role="ApiKey" Type="Self.ApiKey" Multiplicity="1" />
+          <End Role="Zone" Type="Self.Zone" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiKey">
+              <PropertyRef Name="apiKeyId" />
+            </Principal>
+            <Dependent Role="Zone">
+              <PropertyRef Name="apiKeyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKBias388856">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="Bias" Type="Self.Bias" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="Bias">
+              <PropertyRef Name="predictedDataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKBias924925">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="Bias" Type="Self.Bias" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="Bias">
+              <PropertyRef Name="predictedZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature899318">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="sourceDataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature987439">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="predictedDataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKScoutDataP852470">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="ScoutDataPart" Type="Self.ScoutDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="ScoutDataPart">
+              <PropertyRef Name="dataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat787759">
+          <End Role="DataSubject" Type="Self.DataSubject" Multiplicity="1" />
+          <End Role="StationDataPart" Type="Self.StationDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSubject">
+              <PropertyRef Name="dataSubjectId" />
+            </Principal>
+            <Dependent Role="StationDataPart">
+              <PropertyRef Name="dataSubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature399254">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="sourceZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKFeature548629">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="Feature" Type="Self.Feature" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="Feature">
+              <PropertyRef Name="predictedZoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKScoutDataP894455">
+          <End Role="ScoutData" Type="Self.ScoutData" Multiplicity="1" />
+          <End Role="ScoutDataPart" Type="Self.ScoutDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ScoutData">
+              <PropertyRef Name="scoutDataId" />
+            </Principal>
+            <Dependent Role="ScoutDataPart">
+              <PropertyRef Name="scoutDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat572071">
+          <End Role="Zone" Type="Self.Zone" Multiplicity="1" />
+          <End Role="StationData" Type="Self.StationData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Zone">
+              <PropertyRef Name="zoneId" />
+            </Principal>
+            <Dependent Role="StationData">
+              <PropertyRef Name="zoneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKStationDat863877">
+          <End Role="StationData" Type="Self.StationData" Multiplicity="1" />
+          <End Role="StationDataPart" Type="Self.StationDataPart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StationData">
+              <PropertyRef Name="stationDataId" />
+            </Principal>
+            <Dependent Role="StationDataPart">
+              <PropertyRef Name="stationDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="spaicial_dbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ApiKey" EntityType="Self.ApiKey" />
+          <EntitySet Name="Bias" EntityType="Self.Bias" />
+          <EntitySet Name="DataSubject" EntityType="Self.DataSubject" />
+          <EntitySet Name="Feature" EntityType="Self.Feature" />
+          <EntitySet Name="ScoutData" EntityType="Self.ScoutData" />
+          <EntitySet Name="ScoutDataPart" EntityType="Self.ScoutDataPart" />
+          <EntitySet Name="StationData" EntityType="Self.StationData" />
+          <EntitySet Name="StationDataPart" EntityType="Self.StationDataPart" />
+          <EntitySet Name="Zone" EntityType="Self.Zone" />
+          <AssociationSet Name="FKScoutData158528" Association="Self.FKScoutData158528">
+            <End Role="ApiKey" EntitySet="ApiKey" />
+            <End Role="ScoutData" EntitySet="ScoutData" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat922292" Association="Self.FKStationDat922292">
+            <End Role="ApiKey" EntitySet="ApiKey" />
+            <End Role="StationData" EntitySet="StationData" />
+          </AssociationSet>
+          <AssociationSet Name="FKZone588634" Association="Self.FKZone588634">
+            <End Role="ApiKey" EntitySet="ApiKey" />
+            <End Role="Zone" EntitySet="Zone" />
+          </AssociationSet>
+          <AssociationSet Name="FKBias388856" Association="Self.FKBias388856">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="Bias" EntitySet="Bias" />
+          </AssociationSet>
+          <AssociationSet Name="FKBias924925" Association="Self.FKBias924925">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="Bias" EntitySet="Bias" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature899318" Association="Self.FKFeature899318">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature987439" Association="Self.FKFeature987439">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKScoutDataP852470" Association="Self.FKScoutDataP852470">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="ScoutDataPart" EntitySet="ScoutDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat787759" Association="Self.FKStationDat787759">
+            <End Role="DataSubject" EntitySet="DataSubject" />
+            <End Role="StationDataPart" EntitySet="StationDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature399254" Association="Self.FKFeature399254">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKFeature548629" Association="Self.FKFeature548629">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="Feature" EntitySet="Feature" />
+          </AssociationSet>
+          <AssociationSet Name="FKScoutDataP894455" Association="Self.FKScoutDataP894455">
+            <End Role="ScoutData" EntitySet="ScoutData" />
+            <End Role="ScoutDataPart" EntitySet="ScoutDataPart" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat572071" Association="Self.FKStationDat572071">
+            <End Role="Zone" EntitySet="Zone" />
+            <End Role="StationData" EntitySet="StationData" />
+          </AssociationSet>
+          <AssociationSet Name="FKStationDat863877" Association="Self.FKStationDat863877">
+            <End Role="StationData" EntitySet="StationData" />
+            <End Role="StationDataPart" EntitySet="StationDataPart" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="spaicial_dbModelStoreContainer" CdmEntityContainer="spaicial_dbEntities">
+          <EntitySetMapping Name="ApiKey">
+            <EntityTypeMapping TypeName="spaicial_dbModel.ApiKey">
+              <MappingFragment StoreEntitySet="ApiKey">
+                <ScalarProperty Name="apiKeyId" ColumnName="apiKeyId" />
+                <ScalarProperty Name="keyValue" ColumnName="keyValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bias">
+            <EntityTypeMapping TypeName="spaicial_dbModel.Bias">
+              <MappingFragment StoreEntitySet="Bias">
+                <ScalarProperty Name="predictedZoneId" ColumnName="predictedZoneId" />
+                <ScalarProperty Name="predictedDataSubjectId" ColumnName="predictedDataSubjectId" />
+                <ScalarProperty Name="multiValue" ColumnName="multiValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataSubject">
+            <EntityTypeMapping TypeName="spaicial_dbModel.DataSubject">
+              <MappingFragment StoreEntitySet="DataSubject">
+                <ScalarProperty Name="dataSubjectId" ColumnName="dataSubjectId" />
+                <ScalarProperty Name="label" ColumnName="label" />
+                <ScalarProperty Name="minValue" ColumnName="minValue" />
+                <ScalarProperty Name="maxValue" ColumnName="maxValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Feature">
+            <EntityTypeMapping TypeName="spaicial_dbModel.Feature">
+              <MappingFragment StoreEntitySet="Feature">
+                <ScalarProperty Name="predictedZoneId" ColumnName="predictedZoneId" />
+                <ScalarProperty Name="predictedDataSubjectId" ColumnName="predictedDataSubjectId" />
+                <ScalarProperty Name="sourceZoneId" ColumnName="sourceZoneId" />
+                <ScalarProperty Name="sourceDataSubjectId" ColumnName="sourceDataSubjectId" />
+                <ScalarProperty Name="expValue" ColumnName="expValue" />
+                <ScalarProperty Name="multiValue" ColumnName="multiValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ScoutData">
+            <EntityTypeMapping TypeName="spaicial_dbModel.ScoutData">
+              <MappingFragment StoreEntitySet="ScoutData">
+                <ScalarProperty Name="scoutDataId" ColumnName="scoutDataId" />
+                <ScalarProperty Name="apiKeyId" ColumnName="apiKeyId" />
+                <ScalarProperty Name="locationPoint" ColumnName="locationPoint" />
+                <ScalarProperty Name="dateTimeCollected" ColumnName="dateTimeCollected" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ScoutDataPart">
+            <EntityTypeMapping TypeName="spaicial_dbModel.ScoutDataPart">
+              <MappingFragment StoreEntitySet="ScoutDataPart">
+                <ScalarProperty Name="scoutDataId" ColumnName="scoutDataId" />
+                <ScalarProperty Name="dataSubjectId" ColumnName="dataSubjectId" />
+                <ScalarProperty Name="dataValue" ColumnName="dataValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StationData">
+            <EntityTypeMapping TypeName="spaicial_dbModel.StationData">
+              <MappingFragment StoreEntitySet="StationData">
+                <ScalarProperty Name="stationDataId" ColumnName="stationDataId" />
+                <ScalarProperty Name="apiKeyId" ColumnName="apiKeyId" />
+                <ScalarProperty Name="zoneId" ColumnName="zoneId" />
+                <ScalarProperty Name="dateTimeCollected" ColumnName="dateTimeCollected" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StationDataPart">
+            <EntityTypeMapping TypeName="spaicial_dbModel.StationDataPart">
+              <MappingFragment StoreEntitySet="StationDataPart">
+                <ScalarProperty Name="stationDataId" ColumnName="stationDataId" />
+                <ScalarProperty Name="dataSubjectId" ColumnName="dataSubjectId" />
+                <ScalarProperty Name="dataValue" ColumnName="dataValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Zone">
+            <EntityTypeMapping TypeName="spaicial_dbModel.Zone">
+              <MappingFragment StoreEntitySet="Zone">
+                <ScalarProperty Name="zoneId" ColumnName="zoneId" />
+                <ScalarProperty Name="apiKeyId" ColumnName="apiKeyId" />
+                <ScalarProperty Name="locationArea" ColumnName="locationArea" />
+                <ScalarProperty Name="isPredicted" ColumnName="isPredicted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

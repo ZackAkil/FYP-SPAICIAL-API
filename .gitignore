@@ -7,6 +7,9 @@
 *.userosscache
 *.sln.docstates
 
+#sensitive files
+Web.config
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
