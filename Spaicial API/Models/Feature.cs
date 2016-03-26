@@ -18,7 +18,7 @@ namespace Spaicial_API.Models
         public int predictedDataSubjectId { get; set; }
         public int sourceZoneId { get; set; }
         public int sourceDataSubjectId { get; set; }
-        public double expValue { get; set; }
+        public int expValue { get; set; }
         public double multiValue { get; set; }
     
         public virtual DataSubject DataSubject { get; set; }
