@@ -17,12 +17,6 @@ namespace Spaicial_API.Models
         public int scoutDataId { get; set; }
         public int dataSubjectId { get; set; }
         public double dataValue { get; set; }
-
-        public ScoutDataPart(int dataSubjectId,double dataValue)
-        {
-            this.dataSubjectId = dataSubjectId;
-            this.dataValue = dataValue;
-        }
     
         public virtual DataSubject DataSubject { get; set; }
         public virtual ScoutData ScoutData { get; set; }

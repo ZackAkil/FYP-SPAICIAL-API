@@ -34,7 +34,11 @@ namespace Spaicial_API.Models
             for (int i = 0; i < dataLables.Length; i++)
             {
                 DataSubject dataSubject = db.DataSubject.Where(d => d.label == dataLables[i]).First();
-                convert.ScoutDataPart.Add(new ScoutDataPart(dataSubject.dataSubjectId, System.Convert.ToDouble(dataValues[i])));
+                ScoutDataPart dataPartToAdd = new ScoutDataPart();
+                dataPartToAdd.dataSubjectId = dataSubject.dataSubjectId;
+                dataPartToAdd.dataValue = System.Convert.ToDouble(dataValues[i]);
+
+                convert.ScoutDataPart.Add(dataPartToAdd);
             }
 
             return convert;
@@ -56,7 +60,11 @@ namespace Spaicial_API.Models
             for (int i = 0; i < dataLables.Length; i++)
             {
                 DataSubject dataSubject = db.DataSubject.Where(d => d.label == dataLables[i]).First();
-                convert.StationDataPart.Add(new StationDataPart(dataSubject.dataSubjectId, System.Convert.ToDouble(dataValues[i])));
+                StationDataPart dataPartToAdd = new StationDataPart();
+                dataPartToAdd.dataSubjectId = dataSubject.dataSubjectId;
+                dataPartToAdd.dataValue = System.Convert.ToDouble(dataValues[i]);
+
+                convert.StationDataPart.Add(dataPartToAdd);
             }
 
             return convert;
