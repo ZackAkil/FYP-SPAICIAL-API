@@ -186,6 +186,7 @@
     <Compile Include="Models\Bias.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DataCollector.cs" />
     <Compile Include="Models\DataSubject.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>

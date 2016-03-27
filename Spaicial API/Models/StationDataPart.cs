@@ -17,7 +17,13 @@ namespace Spaicial_API.Models
         public int stationDataId { get; set; }
         public int dataSubjectId { get; set; }
         public double dataValue { get; set; }
-    
+
+        public StationDataPart(int dataSubjectId, double dataValue)
+        {
+            this.dataSubjectId = dataSubjectId;
+            this.dataValue = dataValue;
+        }
+
         public virtual DataSubject DataSubject { get; set; }
         public virtual StationData StationData { get; set; }
     }

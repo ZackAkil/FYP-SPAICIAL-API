@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace UrbanWindPredictorAPI.Models
+﻿
+namespace Spaicial_API.Models
 {
 
     public static class ArrayExtension

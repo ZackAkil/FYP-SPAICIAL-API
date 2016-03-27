@@ -6,7 +6,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics;
 
-namespace UrbanWindPredictorAPI.Models
+namespace Spaicial_API.Models
 {
     public static class Learning
     {
