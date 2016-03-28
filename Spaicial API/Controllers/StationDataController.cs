@@ -87,7 +87,7 @@ namespace Spaicial_API.Controllers
             db.StationData.Add(stationData);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = stationData.stationDataId }, stationData);
+            return CreatedAtRoute("DefaultApi", new { id = stationData.stationDataId }, stationDataCollector);
         }
 
         //// DELETE: api/StationData/5
