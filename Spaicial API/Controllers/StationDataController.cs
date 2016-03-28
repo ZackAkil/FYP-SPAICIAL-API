@@ -73,12 +73,16 @@ namespace Spaicial_API.Controllers
 
         // POST: api/StationData
         [ResponseType(typeof(StationData))]
-        public async Task<IHttpActionResult> PostStationData(StationData stationData)
+        public async Task<IHttpActionResult> PostStationData(StationDataCollector stationDataCollector)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            int apiKeyId = db.ApiKey.Where(a => a.keyValue == stationDataCollector.apiKey).First().apiKeyId;
+
+            StationData stationData = stationDataCollector.ConvertToDb(apiKeyId,db);
 
             db.StationData.Add(stationData);
             await db.SaveChangesAsync();
