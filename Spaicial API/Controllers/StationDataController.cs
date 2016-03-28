@@ -17,24 +17,24 @@ namespace Spaicial_API.Controllers
     {
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
-        // GET: api/StationData
-        public IQueryable<StationData> GetStationData()
-        {
-            return db.StationData;
-        }
+        //// GET: api/StationData
+        //public IQueryable<StationData> GetStationData()
+        //{
+        //    return db.StationData;
+        //}
 
-        // GET: api/StationData/5
-        [ResponseType(typeof(StationData))]
-        public async Task<IHttpActionResult> GetStationData(int id)
-        {
-            StationData stationData = await db.StationData.FindAsync(id);
-            if (stationData == null)
-            {
-                return NotFound();
-            }
+        //// GET: api/StationData/5
+        //[ResponseType(typeof(StationData))]
+        //public async Task<IHttpActionResult> GetStationData(int id)
+        //{
+        //    StationData stationData = await db.StationData.FindAsync(id);
+        //    if (stationData == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(stationData);
-        }
+        //    return Ok(stationData);
+        //}
 
         //// PUT: api/StationData/5
         //[ResponseType(typeof(void))]
