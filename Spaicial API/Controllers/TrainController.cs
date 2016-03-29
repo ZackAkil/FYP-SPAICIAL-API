@@ -17,11 +17,25 @@ namespace Spaicial_API.Controllers
 
         // GET: api/ScoutData/5
         [ResponseType(typeof(string))]
-        public async Task<IHttpActionResult> GetTrainZone(int id)
+        public async Task<IHttpActionResult> GetTrainZone(int id,string dataSubject)
         {
             Zone zoneToTrain = await db.Zone.FindAsync(id);
-            var scoutData = db.ScoutData.Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
+            int dataSubjectId = db.DataSubject.Where(d => d.label == dataSubject).First().dataSubjectId;
+
+            //get scout data that is in the area of the zone and has the data subject we want to predict
+            var scoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Where(p=> p.dataSubjectId == dataSubjectId)).Count()>0)
+                .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
+
+            //get station that are mention in prediction
+            var stations = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == dataSubjectId)
+                .Select(f => f.Zone).Distinct().ToList();
+
+            //get data subjects that are mentioned in the prediction
+            var dataSubjects = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == dataSubjectId)
+                .Select(f => f.DataSubject).Distinct();
+
+            //Console.Write(stationData.ToArray().to);
             var count = scoutData.Count();
 
             if (zoneToTrain == null)
