@@ -53,24 +53,27 @@ namespace Spaicial_API.Controllers
             double[][] trainingData = new double[featuresToTrain.Count() + 1][];
 
             //build up training data
-            foreach (var scoutDataItem in scoutData)
+            //foreach (var scoutDataItem in scoutData)
+            //{
+            //    foreach (var stationMentionedItem in stationsMentioned)
+            //    {
+            //        foreach (var dataSubjectItem in dataSubjectsMentioned)
+            //        {
+            //            //if feature with current station and data subject is used in prediction
+            //            if(featuresToTrain.Where(f => (f.sourceZoneId == stationMentionedItem.zoneId)
+            //                &(f.sourceDataSubjectId == dataSubjectItem.dataSubjectId)).Any()){
+
+            //                var featureDataQuery = db.StationDataPart.Where(s => (s.StationData.zoneId == stationMentionedItem.zoneId)
+            //               & (s.dataSubjectId == dataSubjectItem.dataSubjectId));
+
+            //            }
+            //        }
+            //    }
+            //}
+
+            foreach (var featureItem in featuresToTrain)
             {
-                foreach (var stationMentionedItem in stationsMentioned)
-                {
-                    foreach (var dataSubjectItem in dataSubjectsMentioned)
-                    {
-                        //if feature with current station and data subject is used in prediction
-                        if(featuresToTrain.Where(f => (f.sourceZoneId == stationMentionedItem.zoneId)
-                            &(f.sourceDataSubjectId == dataSubjectItem.dataSubjectId)).Any()){
-
-                            var featureDataQuery = db.StationDataPart.Where(s => (s.StationData.zoneId == stationMentionedItem.zoneId)
-                           & (s.dataSubjectId == dataSubjectItem.dataSubjectId));
-
-                        }
-
-                    }
-
-                }
+                //get corrisponding feature data and add it to jagged array
             }
 
 
