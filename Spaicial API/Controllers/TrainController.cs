@@ -31,7 +31,7 @@ namespace Spaicial_API.Controllers
             var featuresToTrain = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId);
            
             //get scout data that is in the area of the zone and has the data subject we want to predict
-            var scoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Where(p => p.dataSubjectId == predictedDataSubjectId)).Count() > 0)
+            var scoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
 
@@ -71,12 +71,22 @@ namespace Spaicial_API.Controllers
             //    }
             //}
 
+    
             foreach (var featureItem in featuresToTrain)
             {
-                //get corrisponding feature data and add it to jagged array
+                //get corrisponding feature data 
+                var featureDataQuery = db.StationDataPart.Where(s => (s.StationData.zoneId == featureItem.sourceZoneId)
+                    && (s.dataSubjectId == featureItem.sourceDataSubjectId));
+
+                var count = featureDataQuery.Count();
+
+                var featureDataArray = (from feat in featureDataQuery select (
+                                        new { value = feat.dataValue * featureItem.expValue,
+                                            dateTimeCollected = feat.StationData.dateTimeCollected })).ToArray();
+                var numFound = featureDataArray.Count();
             }
 
-
+    
             //var queryForDataSubject = db.StationDataPart.Where(s => s.dataSubjectId == 1);
             //var queryForDataSubject2 = db.StationDataPart.Where(s => s.dataSubjectId == 2);
 
