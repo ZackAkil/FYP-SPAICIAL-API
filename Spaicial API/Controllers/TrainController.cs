@@ -1,6 +1,7 @@
 ﻿using Spaicial_API.Models;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,11 @@ namespace Spaicial_API.Controllers
 {
     public class TrainController : ApiController
     {
+        private class FeatureFetch
+        {
+            public double value;
+            public DateTime dateTimeCollected;
+        }
 
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
@@ -70,8 +76,10 @@ namespace Spaicial_API.Controllers
             //        }
             //    }
             //}
+            //dynamic columnsTemp = new ExpandoObject();
 
-    
+            var dataBuild = new List<List<FeatureFetch>>(); 
+
             foreach (var featureItem in featuresToTrain)
             {
                 //get corrisponding feature data 
@@ -81,10 +89,15 @@ namespace Spaicial_API.Controllers
                 var count = featureDataQuery.Count();
 
                 var featureDataArray = (from feat in featureDataQuery select (
-                                        new { value = Math.Pow((feat.dataValue/(feat.DataSubject.maxValue - feat.DataSubject.minValue)),featureItem.expValue),
-                                            dateTimeCollected = feat.StationData.dateTimeCollected })).ToArray();
+                                        new FeatureFetch { value = Math.Pow((feat.dataValue/(feat.DataSubject.maxValue - feat.DataSubject.minValue)),featureItem.expValue),
+                                            dateTimeCollected = feat.StationData.dateTimeCollected})).ToList();
+
+                dataBuild.Add(featureDataArray);
+                
                 var numFound = featureDataArray.Count();
             }
+
+            var countZ = dataBuild.Count;
 
     
             //var queryForDataSubject = db.StationDataPart.Where(s => s.dataSubjectId == 1);
