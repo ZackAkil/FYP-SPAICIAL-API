@@ -81,7 +81,7 @@ namespace Spaicial_API.Controllers
                 var count = featureDataQuery.Count();
 
                 var featureDataArray = (from feat in featureDataQuery select (
-                                        new { value = Math.Pow((feat.dataValue/feat.DataSubject.maxValue),featureItem.expValue),
+                                        new { value = Math.Pow((feat.dataValue/(feat.DataSubject.maxValue - feat.DataSubject.minValue)),featureItem.expValue),
                                             dateTimeCollected = feat.StationData.dateTimeCollected })).ToArray();
                 var numFound = featureDataArray.Count();
             }
