@@ -111,13 +111,15 @@ namespace Spaicial_API.Controllers
 
             //fill list with dateTimes for each feature in order of the dateTimes
 
-            //create jagged array of same size as all features that will be optimized (+1 for bias)
-            double[][] trainingData = new double[featuresToTrain.Count() + 1][];
+
+
+
+
+
+
+
 
             //build up training data
-
-            //clean data so that only data that matches via its dateTimeCollected feild is used
-
 
             var dataBuild = new List<List<FeatureFetch>>(); 
 
@@ -140,15 +142,6 @@ namespace Spaicial_API.Controllers
 
 
             var countZ = dataBuild.Count;
-
-    
-            //var queryForDataSubject = db.StationDataPart.Where(s => s.dataSubjectId == 1);
-            //var queryForDataSubject2 = db.StationDataPart.Where(s => s.dataSubjectId == 2);
-
-            //var innerJoinQuery =
-            //from d in queryForDataSubject
-            //join d2 in queryForDataSubject2 on d.stationDataId equals d2.stationDataId
-            //select new { stationDataId = d.stationDataId, windSpeed = d.dataValue, windDirection = d2.dataValue, date = d.StationData.dateTimeCollected }; //produces flat sequence
 
             return Ok("hello");
         }
