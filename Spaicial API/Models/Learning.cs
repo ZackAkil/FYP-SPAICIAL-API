@@ -37,21 +37,25 @@ namespace Spaicial_API.Models
         public static double[] Learn(double[] theta, double[,]featureData, double[] results)
         {
 
+            Matrix<Double> featureValues = DenseMatrix.OfArray(featureData);
+            Vector<Double> trueValues = DenseVector.OfArray(results);
+
+            return Learn(theta,featureData,results);
+        }
+
+
+        public static double[] Learn(double[] theta, Matrix<Double>featureData, Vector<Double> results)
+        {
             double[] xInitial = theta;
             double[] xLower = new double[theta.Length];
             xLower.Populate(-5);
             double[] xUpper = new double[theta.Length];
             xUpper.Populate(5);
 
-            Matrix<Double> featureValues = DenseMatrix.OfArray(featureData);
-
-            Vector<Double> trueValues = DenseVector.OfArray(results);
-
-            var solution = NelderMeadSolver.Solve(x => CostFunction(x, featureValues, trueValues), xInitial, xLower, xUpper);
+            var solution = NelderMeadSolver.Solve(x => CostFunction(x, featureData, results), xInitial, xLower, xUpper);
 
             double[] optimisedTheta = new double[theta.Length];
-            //Console.WriteLine(solution.Result);
-            
+
             for (int i = 0; i < theta.Length; i++)
             {
                 optimisedTheta[i] = solution.GetValue(i + 1);
