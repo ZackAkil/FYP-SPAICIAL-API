@@ -43,23 +43,23 @@ namespace Spaicial_API.Controllers
             var featuresToTrain = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId);
            
             //get scout data that is in the area of the zone and has the data subject we want to predict
-            var scoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubjectId)))
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
 
-            //join scout data with station data that has same recorded time
-            var scoutDataAndStationData =
-                from sc in scoutData
-                join st in db.StationData on sc.dateTimeCollected equals st.dateTimeCollected
-                select new { scout = sc, station = st };
+            ////join scout data with station data that has same recorded time
+            //var scoutDataAndStationData =
+            //    from sc in scoutData
+            //    join st in db.StationData on sc.dateTimeCollected equals st.dateTimeCollected
+            //    select new { scout = sc, station = st };
 
-            //get stations that are mentioned in prediction
-            var stationsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
-                .Select(f => f.Zone).Distinct();
+            ////get stations that are mentioned in prediction
+            //var stationsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
+            //    .Select(f => f.Zone).Distinct();
             
-            //get data subjects that are mentioned in the prediction
-            var dataSubjectsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
-                .Select(f => f.DataSubject).Distinct();
+            ////get data subjects that are mentioned in the prediction
+            //var dataSubjectsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
+            //    .Select(f => f.DataSubject).Distinct();
 
             //save unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
@@ -103,7 +103,7 @@ namespace Spaicial_API.Controllers
             }
 
             //get dateTimes of  station data that matches with scout data and take first 100 rows
-            var validDatesScoutData = from dataPart in scoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
+            var validDatesScoutData = from dataPart in validScoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
                                       .OrderByDescending(s => s.dateTimeCollected)
                                       .Take(100)
                                       select (dataPart.dateTimeCollected);
