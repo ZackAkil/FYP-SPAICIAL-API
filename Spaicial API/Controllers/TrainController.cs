@@ -84,7 +84,8 @@ namespace Spaicial_API.Controllers
             IQueryable <DateTime> validDateTimes = from dataPart in db.StationDataPart
                                                   .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
                                                    && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
-                                                    select (dataPart.StationData.dateTimeCollected);
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                                   select (dataPart.StationData.dateTimeCollected);
 
 
             //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
@@ -97,9 +98,12 @@ namespace Spaicial_API.Controllers
                                                   .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
                                                    && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
                                                    &&(tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
                                  select (dataPart.StationData.dateTimeCollected);
             }
 
+
+            //fill list with dateTimes for each feature in order of the dateTimes
 
             //create jagged array of same size as all features that will be optimized (+1 for bias)
             double[][] trainingData = new double[featuresToTrain.Count() + 1][];
