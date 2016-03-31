@@ -19,6 +19,12 @@ namespace Spaicial_API.Controllers
             public DateTime dateTimeCollected;
         }
 
+        private class FeatureRelationship
+        {
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
+
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
         // GET: api/ScoutData/5
@@ -55,28 +61,30 @@ namespace Spaicial_API.Controllers
             var dataSubjectsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
                 .Select(f => f.DataSubject).Distinct();
 
+            //save unique feature relationships ignoring exponants
+            List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
+            foreach (var feature in featuresToTrain)
+            {
+                FeatureRelationship featureCheck = new FeatureRelationship
+                {
+                    sourceZoneId = feature.sourceZoneId,
+                    sourceDataSubjectId = feature.sourceDataSubjectId
+                };
+
+                if (!featureRelationshps.Any(f => (f.sourceZoneId == featureCheck.sourceZoneId) &&
+                (f.sourceDataSubjectId == featureCheck.sourceDataSubjectId)))
+                {
+                    featureRelationshps.Add(featureCheck);
+                }
+            }
+
             //create jagged array of same size as all features that will be optimized (+1 for bias)
             double[][] trainingData = new double[featuresToTrain.Count() + 1][];
 
             //build up training data
-            //foreach (var scoutDataItem in scoutData)
-            //{
-            //    foreach (var stationMentionedItem in stationsMentioned)
-            //    {
-            //        foreach (var dataSubjectItem in dataSubjectsMentioned)
-            //        {
-            //            //if feature with current station and data subject is used in prediction
-            //            if(featuresToTrain.Where(f => (f.sourceZoneId == stationMentionedItem.zoneId)
-            //                &(f.sourceDataSubjectId == dataSubjectItem.dataSubjectId)).Any()){
 
-            //                var featureDataQuery = db.StationDataPart.Where(s => (s.StationData.zoneId == stationMentionedItem.zoneId)
-            //               & (s.dataSubjectId == dataSubjectItem.dataSubjectId));
+            //clean data so that only data that matches via its dateTimeCollected feild is used
 
-            //            }
-            //        }
-            //    }
-            //}
-            //dynamic columnsTemp = new ExpandoObject();
 
             var dataBuild = new List<List<FeatureFetch>>(); 
 
@@ -96,6 +104,7 @@ namespace Spaicial_API.Controllers
                 
                 var numFound = featureDataArray.Count();
             }
+
 
             var countZ = dataBuild.Count;
 
