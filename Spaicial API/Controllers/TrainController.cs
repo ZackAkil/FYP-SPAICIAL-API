@@ -1,4 +1,5 @@
-﻿using Spaicial_API.Models;
+﻿using MathNet.Numerics.LinearAlgebra;
+using Spaicial_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -139,8 +140,9 @@ namespace Spaicial_API.Controllers
 
 
             // build multidimensional array of traininng set for non-linear optimisation class
-            double[,] trainingData = new double[validDatesConcideringScoutData.Count(),featuresToTrain.Count()+1];
+            //double[,] trainingData = new double[validDatesConcideringScoutData.Count(),featuresToTrain.Count()+1];
 
+            Matrix<Double> trainingData;
 
 
             //build up training data

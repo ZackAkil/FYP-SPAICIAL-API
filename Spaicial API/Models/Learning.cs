@@ -43,7 +43,13 @@ namespace Spaicial_API.Models
             return Learn(theta,featureData,results);
         }
 
-
+        /// <summary>
+        /// Execute optimisation of theta values based on training data.
+        /// </summary>
+        /// <param name="theta">Current values of theta.</param>
+        /// <param name="featureData">values of features.</param>
+        /// <param name="result">List of results based on feature values.</param>
+        /// <returns>Optimised values of theta</returns>
         public static double[] Learn(double[] theta, Matrix<Double>featureData, Vector<Double> results)
         {
             double[] xInitial = theta;
