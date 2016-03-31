@@ -111,7 +111,7 @@ namespace Spaicial_API.Controllers
             }
 
             //get dateTimes of  station data that matches with scout data and take first 100 rows
-            var validDatesScoutData = from dataPart in validScoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
+            var validDatesConcideringScoutData = from dataPart in validScoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
                                       .OrderByDescending(s => s.dateTimeCollected)
                                       .Take(100)
                                       select (dataPart.dateTimeCollected);
@@ -130,7 +130,7 @@ namespace Spaicial_API.Controllers
                 fetchedValidData.values = (from value in db.StationDataPart
                                            .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
                                             && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
-                                            && (validDatesScoutData.Any(v => v == s.StationData.dateTimeCollected)))
+                                            && (validDatesConcideringScoutData.Any(v => v == s.StationData.dateTimeCollected)))
                                             .OrderByDescending(s => s.StationData.dateTimeCollected)
                                             select value.dataValue).ToList();
                 //add object to list obeject
@@ -138,6 +138,8 @@ namespace Spaicial_API.Controllers
             }
 
 
+            // build multidimensional array of traininng set for non-linear optimisation class
+            double[,] trainingData = new double[validDatesConcideringScoutData.Count(),featuresToTrain.Count()+1];
 
 
 
