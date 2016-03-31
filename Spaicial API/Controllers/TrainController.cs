@@ -78,16 +78,26 @@ namespace Spaicial_API.Controllers
                 }
             }
 
-            //create list of valid dates that exists across all data relationships
-            List<DateTime> validDateTimes = new List<DateTime>();
+            FeatureRelationship firstRelationship = featureRelationshps.First();
+
+            //create query of valid dates that exists across all data relationships,get all data parts that match relationship
+            IQueryable <DateTime> validDateTimes = from dataPart in db.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
+                                                    select (dataPart.StationData.dateTimeCollected);
+
 
             //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
-            foreach (var uniqueRelationship in featureRelationshps)
+            foreach (var uniqueRelationship in featureRelationshps.Skip(1))
             {
-                //get all data parts that match relationship
-                var check = db.StationDataPart.Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId) 
-                && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId));
-
+                //store current validDateTimes so that i can be used within updating itself
+                var tempValidDateTimes = validDateTimes;
+                //for the next interation update the list of valid dates with ones that exist in each relationship
+                validDateTimes = from dataPart in db.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                                   &&(tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
+                                 select (dataPart.StationData.dateTimeCollected);
             }
 
 
