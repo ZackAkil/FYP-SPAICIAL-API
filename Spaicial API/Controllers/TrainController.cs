@@ -102,9 +102,12 @@ namespace Spaicial_API.Controllers
                                  select (dataPart.StationData.dateTimeCollected);
             }
 
-            //append take 100 row to validDateTimes query
-            var holdValidDateTimes = validDateTimes;
-            validDateTimes = holdValidDateTimes.Take(100);
+            //get dateTimes of  station data that matches with scout data and take first 100 rows
+            var validDatesScoutData = from dataPart in scoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
+                                      .OrderByDescending(s => s.dateTimeCollected)
+                                      .Take(100)
+                                      select (dataPart.dateTimeCollected);
+                                      
 
             //fill list with dateTimes for each feature in order of the dateTimes
 
