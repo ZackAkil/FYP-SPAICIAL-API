@@ -102,6 +102,9 @@ namespace Spaicial_API.Controllers
                                  select (dataPart.StationData.dateTimeCollected);
             }
 
+            //append take 100 row to validDateTimes query
+            var holdValidDateTimes = validDateTimes;
+            validDateTimes = holdValidDateTimes.Take(100);
 
             //fill list with dateTimes for each feature in order of the dateTimes
 
