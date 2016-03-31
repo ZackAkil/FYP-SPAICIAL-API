@@ -78,6 +78,19 @@ namespace Spaicial_API.Controllers
                 }
             }
 
+            //create list of valid dates that exists across all data relationships
+            List<DateTime> validDateTimes = new List<DateTime>();
+
+            //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
+            foreach (var uniqueRelationship in featureRelationshps)
+            {
+                //get all data parts that match relationship
+                var check = db.StationDataPart.Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId) 
+                && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId));
+
+            }
+
+
             //create jagged array of same size as all features that will be optimized (+1 for bias)
             double[][] trainingData = new double[featuresToTrain.Count() + 1][];
 
