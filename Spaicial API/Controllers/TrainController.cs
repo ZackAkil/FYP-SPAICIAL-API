@@ -25,6 +25,13 @@ namespace Spaicial_API.Controllers
             public int sourceDataSubjectId;
         }
 
+        private class ValidFeatureData
+        {
+            public List<double> values;
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
+
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
         // GET: api/ScoutData/5
@@ -61,7 +68,8 @@ namespace Spaicial_API.Controllers
             //var dataSubjectsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
             //    .Select(f => f.DataSubject).Distinct();
 
-            //save unique feature relationships ignoring exponants
+
+            //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
             foreach (var feature in featuresToTrain)
             {
@@ -107,13 +115,27 @@ namespace Spaicial_API.Controllers
                                       .OrderByDescending(s => s.dateTimeCollected)
                                       .Take(100)
                                       select (dataPart.dateTimeCollected);
-                                      
+
 
             //fill list with dateTimes for each feature in order of the dateTimes
+            List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
 
+            foreach (var uniqueRelationship in featureRelationshps)
+            {
+                ValidFeatureData fetchedValidData = new ValidFeatureData {
+                    sourceZoneId = uniqueRelationship.sourceZoneId,
+                    sourceDataSubjectId = uniqueRelationship.sourceDataSubjectId };
 
-
-
+                //fill objects list feild with data from valid dateTimes
+                fetchedValidData.values = (from value in db.StationDataPart
+                                           .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                            && (validDatesScoutData.Any(v => v == s.StationData.dateTimeCollected)))
+                                            .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                            select value.dataValue).ToList();
+                //add object to list obeject
+                validFeatureDataValues.Add(fetchedValidData);
+            }
 
 
 
