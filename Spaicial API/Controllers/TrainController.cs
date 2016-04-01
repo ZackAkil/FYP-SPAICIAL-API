@@ -145,9 +145,19 @@ namespace Spaicial_API.Controllers
 
 
             //build initial matrix will first column of 1's for bias
-            Matrix<Double> trainingData = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0) ;
+            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0) ;
 
+            foreach (var feature in featuresToTrain)
+            {
 
+                var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId) 
+                                                    && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
+
+                double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
+                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
+                                                                                    .Divide(featureScale))
+                                                                                    .PointwisePower(feature.expValue));
+            }
 
 
             //create results column
