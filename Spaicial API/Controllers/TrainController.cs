@@ -34,6 +34,8 @@ namespace Spaicial_API.Controllers
         [ResponseType(typeof(string))]
         public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject)
         {
+            //add api check
+
             Zone zoneToTrain = await db.Zone.FindAsync(id);
 
             if (zoneToTrain == null)
@@ -163,25 +165,25 @@ namespace Spaicial_API.Controllers
             //create array of itial feature values
             double[] intialFeatureWeights = currentFeatureWeights.ToArray();
 
-
+            //send to learning method to optimise values of feature weights
             double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
 
-            //save vnew feature values to database
 
             var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
 
+            //save vnew feature values to database
             saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain,ref db);
 
             return Ok("hello");
         }
 
-        private void getTraningData()
+        private void get()
         {
 
 
         }
 
-        private void cleanTraningData()
+        private void fetchValidDataValues()
         {
 
         }
