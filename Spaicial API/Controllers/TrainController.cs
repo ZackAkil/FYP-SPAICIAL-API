@@ -57,21 +57,6 @@ namespace Spaicial_API.Controllers
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
 
-            ////join scout data with station data that has same recorded time
-            //var scoutDataAndStationData =
-            //    from sc in scoutData
-            //    join st in db.StationData on sc.dateTimeCollected equals st.dateTimeCollected
-            //    select new { scout = sc, station = st };
-
-            ////get stations that are mentioned in prediction
-            //var stationsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
-            //    .Select(f => f.Zone).Distinct();
-            
-            ////get data subjects that are mentioned in the prediction
-            //var dataSubjectsMentioned = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId)
-            //    .Select(f => f.DataSubject).Distinct();
-
-
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
             foreach (var feature in featuresToTrain)
@@ -119,6 +104,11 @@ namespace Spaicial_API.Controllers
                                       .Take(100)
                                       select (dataPart.dateTimeCollected);
 
+            
+            //get scout data values to use as result data for training
+            var validScoutDataValues = from dataPart in validScoutData.Where(d => (validDatesConcideringScoutData.Any(v => v == d.dateTimeCollected)))
+                                       .OrderByDescending(s => s.dateTimeCollected)
+                                       select (dataPart.dateTimeCollected);
 
             //fill list with dateTimes for each feature in order of the dateTimes
             List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
