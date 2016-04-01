@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using Spaicial_API.Models;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,7 @@ namespace Spaicial_API.Controllers
         private class ValidFeatureData
         {
             public List<double> values;
+            public Vector<double> valuesVector;
             public int sourceZoneId;
             public int sourceDataSubjectId;
         }
@@ -134,15 +136,23 @@ namespace Spaicial_API.Controllers
                                             && (validDatesConcideringScoutData.Any(v => v == s.StationData.dateTimeCollected)))
                                             .OrderByDescending(s => s.StationData.dateTimeCollected)
                                             select value.dataValue).ToList();
+
+                fetchedValidData.valuesVector = DenseVector.OfArray(fetchedValidData.values.ToArray());
                 //add object to list obeject
                 validFeatureDataValues.Add(fetchedValidData);
             }
 
 
-            // build multidimensional array of traininng set for non-linear optimisation class
-            //double[,] trainingData = new double[validDatesConcideringScoutData.Count(),featuresToTrain.Count()+1];
 
-            Matrix<Double> trainingData;
+            //build initial matrix will first column of 1's for bias
+            Matrix<Double> trainingData = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0) ;
+
+
+
+
+            //create results column
+
+            //fetch array of current theta values (already have used feature values)
 
 
             //build up training data
