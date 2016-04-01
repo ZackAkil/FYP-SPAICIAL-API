@@ -108,7 +108,7 @@ namespace Spaicial_API.Controllers
             //get scout data values to use as result data for training
             var validScoutDataValues = from dataPart in validScoutData.Where(d => (validDatesConcideringScoutData.Any(v => v == d.dateTimeCollected)))
                                        .OrderByDescending(s => s.dateTimeCollected)
-                                       select (dataPart.dateTimeCollected);
+                                       select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubjectId).First().dataValue);
 
             //fill list with dateTimes for each feature in order of the dateTimes
             List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
@@ -133,10 +133,18 @@ namespace Spaicial_API.Controllers
             }
 
 
+            //create current feature weights array
+            List<double> currentFeatureWeights = new List<double>();
+
+            //add bias
+            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubjectId).multiValue);
+
 
             //build initial matrix will first column of 1's for bias
-            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0) ;
+            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0);
 
+
+            //build up each column of the training data set
             foreach (var feature in featuresToTrain)
             {
 
@@ -149,6 +157,7 @@ namespace Spaicial_API.Controllers
                                                                                     .PointwisePower(feature.expValue));
             }
 
+            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues.ToArray());
 
             //create results column
 
