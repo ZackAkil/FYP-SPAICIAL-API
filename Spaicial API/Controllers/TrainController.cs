@@ -48,7 +48,8 @@ namespace Spaicial_API.Controllers
                 return NotFound();
             }
 
-            int predictedDataSubjectId = db.DataSubject.Where(d => d.label == dataSubject).First().dataSubjectId;
+            var predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
+            int predictedDataSubjectId = predictedDataSubject.dataSubjectId;
 
             var featuresToTrain = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId);
            
@@ -104,11 +105,6 @@ namespace Spaicial_API.Controllers
                                       .Take(100)
                                       select (dataPart.dateTimeCollected);
 
-            
-            //get scout data values to use as result data for training
-            var validScoutDataValues = from dataPart in validScoutData.Where(d => (validDatesConcideringScoutData.Any(v => v == d.dateTimeCollected)))
-                                       .OrderByDescending(s => s.dateTimeCollected)
-                                       select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubjectId).First().dataValue);
 
             //fill list with dateTimes for each feature in order of the dateTimes
             List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
@@ -132,9 +128,22 @@ namespace Spaicial_API.Controllers
                 validFeatureDataValues.Add(fetchedValidData);
             }
 
+            //get scout data values to use as result data for training
+            //var validScoutDataValues = from dataPart in validScoutData.Where(d => (validDatesConcideringScoutData.Any(v => v == d.dateTimeCollected)))
+            //                           .OrderByDescending(s => s.dateTimeCollected)
+            //                           select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubjectId).First().dataValue);
+
+            //var validScoutDataValues = (from dataPart in db.ScoutDataPart.Where(s => (s.dataSubjectId == predictedDataSubjectId)
+            //                           && (validDatesConcideringScoutData.Any(v => v == s.ScoutData.dateTimeCollected))
+            //                           &&(validScoutData.Any(v => v.ScoutDataPart == s)))
+            //                           .OrderByDescending(s => s.ScoutData.dateTimeCollected)
+            //                           select (dataPart.dataValue)).ToArray();
+
+            var validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData.Any(d => d == v.dateTimeCollected))
+                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubjectId).FirstOrDefault().dataValue)).ToArray();
 
             //create current feature weights array
-            List<double> currentFeatureWeights = new List<double>();
+            List < double > currentFeatureWeights = new List<double>();
 
             //add bias
             currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubjectId).multiValue);
@@ -147,46 +156,35 @@ namespace Spaicial_API.Controllers
             //build up each column of the training data set
             foreach (var feature in featuresToTrain)
             {
+                //add current feature weight values
+                currentFeatureWeights.Add(feature.multiValue);
 
+                //get objecct conatining data relivent to current feature
                 var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId) 
                                                     && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
 
+                //apply feature scalling and exponant values to stored featur data
                 double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
+
                 trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
                                                                                     .Divide(featureScale))
                                                                                     .PointwisePower(feature.expValue));
             }
 
-            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues.ToArray());
+            //get scale of predicted data
+            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
 
-            //create results column
+            //create vectore of result data
+            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
 
-            //fetch array of current theta values (already have used feature values)
-
-
-            //build up training data
-
-            var dataBuild = new List<List<FeatureFetch>>(); 
-
-            foreach (var featureItem in featuresToTrain)
-            {
-                //get corrisponding feature data 
-                var featureDataQuery = db.StationDataPart.Where(s => (s.StationData.zoneId == featureItem.sourceZoneId)
-                    && (s.dataSubjectId == featureItem.sourceDataSubjectId));
-
-                var count = featureDataQuery.Count();
-
-                var featureDataArray = (from feat in featureDataQuery select (
-                                        new FeatureFetch { value = Math.Pow((feat.dataValue/(feat.DataSubject.maxValue - feat.DataSubject.minValue)),featureItem.expValue),
-                                            dateTimeCollected = feat.StationData.dateTimeCollected})).ToList();
-
-                dataBuild.Add(featureDataArray);
-                
-                var numFound = featureDataArray.Count();
-            }
+            //create array of itial feature values
+            double[] intialFeatureWeights = currentFeatureWeights.ToArray();
 
 
-            var countZ = dataBuild.Count;
+            double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
+
+
+
 
             return Ok("hello");
         }
