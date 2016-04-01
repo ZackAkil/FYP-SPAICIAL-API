@@ -4,10 +4,7 @@ using Spaicial_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Dynamic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -16,11 +13,6 @@ namespace Spaicial_API.Controllers
 {
     public class TrainController : ApiController
     {
-        private class FeatureFetch
-        {
-            public double value;
-            public DateTime dateTimeCollected;
-        }
 
         private class FeatureRelationship
         {
@@ -49,13 +41,12 @@ namespace Spaicial_API.Controllers
                 return NotFound();
             }
 
-            var predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
-            int predictedDataSubjectId = predictedDataSubject.dataSubjectId;
+            DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
-            var featuresToTrain = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubjectId);
+            var featuresToTrain = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubject.dataSubjectId);
            
             //get scout data that is in the area of the zone and has the data subject we want to predict
-            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubjectId)))
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
 
@@ -79,7 +70,7 @@ namespace Spaicial_API.Controllers
             FeatureRelationship firstRelationship = featureRelationshps.First();
 
             //create query of valid dates that exists across all data relationships,get all data parts that match relationship
-            IQueryable <DateTime> validDateTimes = from dataPart in db.StationDataPart
+            var validDateTimes = from dataPart in db.StationDataPart
                                                   .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
                                                    && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
                                                    .OrderByDescending(s => s.StationData.dateTimeCollected)
@@ -129,25 +120,16 @@ namespace Spaicial_API.Controllers
                 validFeatureDataValues.Add(fetchedValidData);
             }
 
-            //get scout data values to use as result data for training
-            //var validScoutDataValues = from dataPart in validScoutData.Where(d => (validDatesConcideringScoutData.Any(v => v == d.dateTimeCollected)))
-            //                           .OrderByDescending(s => s.dateTimeCollected)
-            //                           select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubjectId).First().dataValue);
 
-            //var validScoutDataValues = (from dataPart in db.ScoutDataPart.Where(s => (s.dataSubjectId == predictedDataSubjectId)
-            //                           && (validDatesConcideringScoutData.Any(v => v == s.ScoutData.dateTimeCollected))
-            //                           &&(validScoutData.Any(v => v.ScoutDataPart == s)))
-            //                           .OrderByDescending(s => s.ScoutData.dateTimeCollected)
-            //                           select (dataPart.dataValue)).ToArray();
-
+            //get valid scout data to be used as result data
             var validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData.Any(d => d == v.dateTimeCollected))
-                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubjectId).FirstOrDefault().dataValue)).ToArray();
+                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId).FirstOrDefault().dataValue)).ToArray();
 
             //create current feature weights array
             List < double > currentFeatureWeights = new List<double>();
 
             //add bias
-            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubjectId).multiValue);
+            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
 
 
             //build initial matrix will first column of 1's for bias
@@ -186,16 +168,47 @@ namespace Spaicial_API.Controllers
 
             //save vnew feature values to database
 
-            var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubjectId);
+            var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
 
             biasToUpdate.multiValue = newFeatureWeights[0];
-
             db.Entry(biasToUpdate).State = EntityState.Modified;
 
+            int savedIndex = 1;
+
+            foreach (var featureToSave in featuresToTrain)
+            {
+                featureToSave.multiValue = newFeatureWeights[savedIndex];
+                db.Entry(featureToSave).State = EntityState.Modified;
+                savedIndex++;
+            }
+       
             db.SaveChanges();
 
             return Ok("hello");
         }
 
+        private void getTraningData()
+        {
+
+
+        }
+
+        private void cleanTraningData()
+        {
+
+        }
+
+        private void structureTrainingData()
+        {
+
+        }
+
+        private void saveFeatureValues(){
+
+
+        }
+
     }
+
+
 }
