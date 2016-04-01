@@ -170,19 +170,7 @@ namespace Spaicial_API.Controllers
 
             var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
 
-            biasToUpdate.multiValue = newFeatureWeights[0];
-            db.Entry(biasToUpdate).State = EntityState.Modified;
-
-            int savedIndex = 1;
-
-            foreach (var featureToSave in featuresToTrain)
-            {
-                featureToSave.multiValue = newFeatureWeights[savedIndex];
-                db.Entry(featureToSave).State = EntityState.Modified;
-                savedIndex++;
-            }
-       
-            db.SaveChanges();
+            saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain,ref db);
 
             return Ok("hello");
         }
@@ -203,8 +191,33 @@ namespace Spaicial_API.Controllers
 
         }
 
-        private void saveFeatureValues(){
+        /// <summary>
+        /// Save array of optimised feature values to database within their repective tables 
+        /// first value of array should be for bias and remaining are for features in matching order.
+        /// </summary>
+        /// <param name="optimisedValues">newly optimised multiplier values of features</param>
+        /// <param name="biasObject">bias object of specific prediction</param>
+        /// <param name="featureOdbjects">feature objects of specific prediction</param>
+        /// <param name="dbObject">refference to current database connection object </param>
+        /// <returns></returns>
+        private static bool saveFeatureValues(double[] optimisedValues, Bias biasObject, IEnumerable<Feature> featureOdbjects, ref spaicial_dbEntities dbObject)
+        {
 
+            biasObject.multiValue = optimisedValues[0];
+            dbObject.Entry(biasObject).State = EntityState.Modified;
+
+            int savedIndex = 1;
+
+            foreach (var featureToSave in featureOdbjects)
+            {
+                featureToSave.multiValue = optimisedValues[savedIndex];
+                dbObject.Entry(featureToSave).State = EntityState.Modified;
+                savedIndex++;
+            }
+
+            dbObject.SaveChanges();
+
+            return true;
 
         }
 
