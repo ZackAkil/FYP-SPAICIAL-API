@@ -3,6 +3,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 using Spaicial_API.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
@@ -183,8 +184,15 @@ namespace Spaicial_API.Controllers
 
             double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
 
+            //save vnew feature values to database
 
+            var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubjectId);
 
+            biasToUpdate.multiValue = newFeatureWeights[0];
+
+            db.Entry(biasToUpdate).State = EntityState.Modified;
+
+            db.SaveChanges();
 
             return Ok("hello");
         }
