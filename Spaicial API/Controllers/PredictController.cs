@@ -26,8 +26,14 @@ namespace Spaicial_API.Controllers
         public async Task<IHttpActionResult> GetPrediction(int id, string dataSubject)
         {
 
+            //get latest relavant complete record
 
-           return Ok(new PredictionResponse { value = 0.0 });
+            //apply feature scaling and feature transposes 
+
+            //pass data to learning class to get prediction
+
+
+           return Ok(new PredictionResponse { value = 0.0 , latestDataUsed = DateTime.Now });
         }
 
 

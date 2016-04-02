@@ -177,10 +177,13 @@ namespace Spaicial_API.Controllers
             return Ok("hello");
         }
 
-        private void get()
-        {
 
+        private static List<DateTime> getDatesOfCompleteData(int numOfRows, Zone zoneToPredict, DataSubject dataToPredict){
 
+            //defining unique relationships of prediction
+             
+
+            return null;
         }
 
         private void fetchValidDataValues()
