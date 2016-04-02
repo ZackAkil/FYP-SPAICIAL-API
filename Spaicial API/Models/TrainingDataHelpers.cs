@@ -70,6 +70,13 @@ namespace Spaicial_API.Models
             return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
         }
 
+        /// <summary>
+        /// get date of latest complete data across all feature relationships for that prediction
+        /// </summary>
+        /// <param name="zoneToTrain">zone you want to predict</param>
+        /// <param name="predictedDataSubject">data subject you want to predict</param>
+        /// <param name="db">reference to your database connection object</param>
+        /// <returns></returns>
         public static DateTime GetLatestCompleteRow(Zone zoneToTrain, DataSubject predictedDataSubject
             , ref spaicial_dbEntities db)
         {
