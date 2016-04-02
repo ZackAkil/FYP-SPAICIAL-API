@@ -44,14 +44,29 @@ namespace Spaicial_API.Controllers
             }
 
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
-            var featuresToTrain = zoneToTrain.Feature1.Where(f => f.predictedDataSubjectId == predictedDataSubject.dataSubjectId);
+
+            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
+                                                                        &&(f.predictedZoneId == zoneToTrain.zoneId));
+
+            double[] newFeatureWeights = getOptimisedValuesOfPrediction(zoneToTrain,predictedDataSubject,featuresToTrain, ref db);
+
+            Bias biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
+            saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
+
+            return Ok("hello");
+        }
+
+        private static double[] getOptimisedValuesOfPrediction(Zone zoneToTrain, DataSubject predictedDataSubject
+            , IQueryable<Feature> featuresToTrain, ref spaicial_dbEntities db)
+        {
+            
             //get scout data that is in the area of the zone and has the data subject we want to predict
             var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = getUniqueFeatureRelationships(featuresToTrain);
             //get dateTimes of complete data and take first 100 rows
-            var validDatesConcideringScoutData = getLatestDatesOfCompleteData(100, featuresToTrain,validScoutData, featureRelationshps,ref db);
+            var validDatesConcideringScoutData = getLatestDatesOfCompleteData(100, featuresToTrain, validScoutData, featureRelationshps, ref db);
             //get list of data per unquie feature relationship 
             List<ValidFeatureData> validFeatureDataValues = getFeatureData(featureRelationshps, validDatesConcideringScoutData, ref db);
             //get valid scout data to be used as result data
@@ -67,12 +82,7 @@ namespace Spaicial_API.Controllers
             //create array of itial feature values
             double[] intialFeatureWeights = currentFeatureWeights.ToArray();
             //send to learning method to optimise values of feature weights
-            double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
-            var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
-            //save vnew feature values to database
-            saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
-
-            return Ok("hello");
+            return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
         }
 
         private static double[] getScoutData(IQueryable<ScoutData> validScoutData, IQueryable<DateTime> validDatesConcideringScoutData
@@ -89,7 +99,7 @@ namespace Spaicial_API.Controllers
         }
 
         private static List<double> getCurrentFeatureWeights(Zone zoneToTrain, DataSubject predictedDataSubject
-            , IEnumerable<Feature> featuresToTrain, ref spaicial_dbEntities db)
+            , IQueryable<Feature> featuresToTrain, ref spaicial_dbEntities db)
         {
             //create current feature weights array
             List<double> currentFeatureWeights = new List<double>();
@@ -106,7 +116,7 @@ namespace Spaicial_API.Controllers
         }
 
         private static Matrix<Double> createTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData
-            , IEnumerable<Feature> featuresToTrain, List<ValidFeatureData> validFeatureDataValues)
+            , IQueryable<Feature> featuresToTrain, List<ValidFeatureData> validFeatureDataValues)
         {
             Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1, 1.0);
             //build up each column of the training data set
@@ -155,7 +165,7 @@ namespace Spaicial_API.Controllers
             return validFeatureDataValues;
         }
 
-        private static IQueryable<DateTime> getLatestDatesOfCompleteData(int numOfRows, IEnumerable<Feature> featuresToTrain
+        private static IQueryable<DateTime> getLatestDatesOfCompleteData(int numOfRows, IQueryable<Feature> featuresToTrain
             , IQueryable<ScoutData> validScoutData, List<FeatureRelationship> featureRelationships,ref spaicial_dbEntities db)
         {
 
@@ -192,7 +202,7 @@ namespace Spaicial_API.Controllers
             return validDatesConcideringScoutData;
         }
 
-        private static List<FeatureRelationship> getUniqueFeatureRelationships(IEnumerable<Feature> featuresToTrain)
+        private static List<FeatureRelationship> getUniqueFeatureRelationships(IQueryable<Feature> featuresToTrain)
         {
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
@@ -218,15 +228,15 @@ namespace Spaicial_API.Controllers
         /// </summary>
         /// <param name="optimisedValues">newly optimised multiplier values of features</param>
         /// <param name="biasObject">bias object of specific prediction</param>
-        /// <param name="featureObjects">feature objects of specific prediction</param>
+        /// <param name="featuresToTrain">feature objects of specific prediction</param>
         /// <param name="dbObject">refference to current database connection object </param>
         /// <returns></returns>
-        private bool saveFeatureValues(double[] optimisedValues, Bias biasObject, IEnumerable<Feature> featureObjects)
+        private bool saveFeatureValues(double[] optimisedValues, Bias biasObject, IQueryable<Feature> featuresToTrain)
         {
             biasObject.multiValue = optimisedValues[0];
             db.Entry(biasObject).State = EntityState.Modified;
             int savedIndex = 1;
-            foreach (var featureToSave in featureObjects)
+            foreach (var featureToSave in featuresToTrain)
             {
                 featureToSave.multiValue = optimisedValues[savedIndex];
                 db.Entry(featureToSave).State = EntityState.Modified;
