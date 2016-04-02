@@ -225,6 +225,7 @@
     <Compile Include="Models\StationDataPart.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TrainingDataHelpers.cs" />
     <Compile Include="Models\Zone.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
