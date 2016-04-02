@@ -17,7 +17,14 @@ namespace Spaicial_API.Models
             return Distance.MSE(PredictFunction(featureValues, temptheta), trueValues);
         }
 
-        private static Vector<Double> PredictFunction(Matrix<Double> featureValues, Vector<Double> theta)
+
+        /// <summary>
+        /// Generates logistic regression prediction using linear algebra
+        /// </summary>
+        /// <param name="featureValues">matrix of feature values</param>
+        /// <param name="theta">vector of learnt feature weights </param>
+        /// <returns></returns>
+        public static Vector<Double> PredictFunction(Matrix<Double> featureValues, Vector<Double> theta)
         {
             return SigmoidFunction(featureValues * theta);
         }

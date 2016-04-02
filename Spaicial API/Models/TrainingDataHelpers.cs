@@ -70,6 +70,23 @@ namespace Spaicial_API.Models
             return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
         }
 
+        public static DateTime GetLatestCompleteRow(Zone zoneToTrain, DataSubject predictedDataSubject
+            , ref spaicial_dbEntities db)
+        {
+            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
+                                                                      && (f.predictedZoneId == zoneToTrain.zoneId));
+
+            //get scout data that is in the area of the zone and has the data subject we want to predict
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
+                .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
+            //store unique feature relationships ignoring exponants
+            List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships(featuresToTrain);
+            //get dateTimes of complete data and take first 100 rows
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(1, featuresToTrain, validScoutData, featureRelationshps, ref db);
+
+            return validDatesConcideringScoutData.FirstOrDefault();
+        }
+
         private static double[] GetScoutData(IQueryable<ScoutData> validScoutData, IQueryable<DateTime> validDatesConcideringScoutData
             , DataSubject predictedDataSubject)
         {

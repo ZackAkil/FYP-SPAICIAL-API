@@ -26,14 +26,24 @@ namespace Spaicial_API.Controllers
         public async Task<IHttpActionResult> GetPrediction(int id, string dataSubject)
         {
 
-            //get latest relavant complete record
+            Zone zoneToTrain = await db.Zone.FindAsync(id);
+            if (zoneToTrain == null)
+            {
+                return NotFound();
+            }
+            DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
+            //get latest complete record
+            DateTime latestRowDate =  TrainingDataHelpers.GetLatestCompleteRow(zoneToTrain, predictedDataSubject, ref db);
+
+            //get data on that date for the feature relationships
+            
             //apply feature scaling and feature transposes 
 
             //pass data to learning class to get prediction
 
 
-           return Ok(new PredictionResponse { value = 0.0 , latestDataUsed = DateTime.Now });
+            return Ok(new PredictionResponse { value = 0.0 , latestDataUsed = latestRowDate });
         }
 
 
