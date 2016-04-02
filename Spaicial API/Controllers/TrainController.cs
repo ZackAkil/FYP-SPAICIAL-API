@@ -51,17 +51,11 @@ namespace Spaicial_API.Controllers
             var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
-
             //store unique feature relationships ignoring exponants
-            List<FeatureRelationship> featureRelationshps = getFeatureRelationships(featuresToTrain);
+            List<FeatureRelationship> featureRelationshps = getUniqueFeatureRelationships(featuresToTrain);
 
-            FeatureRelationship firstRelationship = featureRelationshps.First();
-            //create query of valid dates that exists across all data relationships,get all data parts that match relationship
-
-
-            //get dateTimes of  station data that matches with scout data and take first 100 rows
+            //get dateTimes of complete data and take first 100 rows
             var validDatesConcideringScoutData = getLatestDatesOfCompleteData(100, featuresToTrain,validScoutData, featureRelationshps,ref db);
-
 
             //fill list with dateTimes for each feature in order of the dateTimes
             List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
@@ -87,8 +81,10 @@ namespace Spaicial_API.Controllers
 
 
             //get valid scout data to be used as result data
-            var validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData.Any(d => d == v.dateTimeCollected))
-                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId).FirstOrDefault().dataValue)).ToArray();
+            var validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData
+                                        .Any(d => d == v.dateTimeCollected))
+                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId)
+                             .FirstOrDefault().dataValue)).ToArray();
 
             //create current feature weights array
             List < double > currentFeatureWeights = new List<double>();
@@ -131,7 +127,6 @@ namespace Spaicial_API.Controllers
             //send to learning method to optimise values of feature weights
             double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
 
-
             var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
 
             //save vnew feature values to database
@@ -141,7 +136,8 @@ namespace Spaicial_API.Controllers
         }
 
 
-        private static IEnumerable<DateTime> getLatestDatesOfCompleteData(int numOfRows, IEnumerable<Feature> featuresToTrain,IQueryable<ScoutData> validScoutData, List<FeatureRelationship> featureRelationships,ref spaicial_dbEntities db)
+        private static IEnumerable<DateTime> getLatestDatesOfCompleteData(int numOfRows, IEnumerable<Feature> featuresToTrain
+            ,IQueryable<ScoutData> validScoutData, List<FeatureRelationship> featureRelationships,ref spaicial_dbEntities db)
         {
 
             FeatureRelationship firstRelationship = featureRelationships.First();
@@ -169,9 +165,10 @@ namespace Spaicial_API.Controllers
             }
 
             //get dateTimes of  station data that matches with scout data and take first 100 rows
-            var validDatesConcideringScoutData = from dataPart in validScoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
-                                      .OrderByDescending(s => s.dateTimeCollected)
-                                      .Take(numOfRows)
+            var validDatesConcideringScoutData = from dataPart in validScoutData
+                                                 .Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
+                                                 .OrderByDescending(s => s.dateTimeCollected)
+                                                 .Take(numOfRows)
                                                  select (dataPart.dateTimeCollected);
 
             return validDatesConcideringScoutData;
@@ -179,7 +176,7 @@ namespace Spaicial_API.Controllers
 
 
 
-        private static List<FeatureRelationship> getFeatureRelationships(IEnumerable<Feature> featuresToTrain)
+        private static List<FeatureRelationship> getUniqueFeatureRelationships(IEnumerable<Feature> featuresToTrain)
         {
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
@@ -190,14 +187,12 @@ namespace Spaicial_API.Controllers
                     sourceZoneId = feature.sourceZoneId,
                     sourceDataSubjectId = feature.sourceDataSubjectId
                 };
-
                 if (!featureRelationshps.Any(f => (f.sourceZoneId == featureCheck.sourceZoneId) &&
                 (f.sourceDataSubjectId == featureCheck.sourceDataSubjectId)))
                 {
                     featureRelationshps.Add(featureCheck);
                 }
             }
-
             return featureRelationshps;
         }
 
@@ -212,25 +207,18 @@ namespace Spaicial_API.Controllers
         /// <returns></returns>
         private bool saveFeatureValues(double[] optimisedValues, Bias biasObject, IEnumerable<Feature> featureObjects)
         {
-
             biasObject.multiValue = optimisedValues[0];
             db.Entry(biasObject).State = EntityState.Modified;
-
             int savedIndex = 1;
-
             foreach (var featureToSave in featureObjects)
             {
                 featureToSave.multiValue = optimisedValues[savedIndex];
                 db.Entry(featureToSave).State = EntityState.Modified;
                 savedIndex++;
             }
-
             db.SaveChanges();
-
             return true;
-
         }
-
     }
 
 
