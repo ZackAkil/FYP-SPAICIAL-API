@@ -54,28 +54,12 @@ namespace Spaicial_API.Controllers
             var validDatesConcideringScoutData = getLatestDatesOfCompleteData(100, featuresToTrain,validScoutData, featureRelationshps,ref db);
             //get list of data per unquie feature relationship 
             List<ValidFeatureData> validFeatureDataValues = getFeatureData(featureRelationshps, validDatesConcideringScoutData, ref db);
-
             //get valid scout data to be used as result data
-            var validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData
-                                        .Any(d => d == v.dateTimeCollected))
-                                        .OrderByDescending(d => d.dateTimeCollected)
-                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId)
-                             .FirstOrDefault().dataValue)).ToArray();
-
+            double[] validScoutDataValues = getScoutData(validScoutData, validDatesConcideringScoutData, predictedDataSubject);
             //create current feature weights array
-            List < double > currentFeatureWeights = new List<double>();
-            //add bias
-            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
-
-            foreach (var feature in featuresToTrain)
-            {
-                //add current feature weight values
-                currentFeatureWeights.Add(feature.multiValue);
-            }
-
+            List<double> currentFeatureWeights = getCurrentFeatureWeights(zoneToTrain, predictedDataSubject, featuresToTrain, ref db);
             //create training data matrix
             Matrix<Double> trainingDataMatrix = createTrainingDataMatrix(validDatesConcideringScoutData, featuresToTrain, validFeatureDataValues);
-
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
@@ -89,6 +73,36 @@ namespace Spaicial_API.Controllers
             saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
 
             return Ok("hello");
+        }
+
+        private static double[] getScoutData(IQueryable<ScoutData> validScoutData, IQueryable<DateTime> validDatesConcideringScoutData
+            , DataSubject predictedDataSubject)
+        {
+
+            double[] validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData
+                                        .Any(d => d == v.dateTimeCollected))
+                                        .OrderByDescending(d => d.dateTimeCollected)
+                                        select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId)
+                                        .FirstOrDefault().dataValue)).ToArray();
+
+            return validScoutDataValues;
+        }
+
+        private static List<double> getCurrentFeatureWeights(Zone zoneToTrain, DataSubject predictedDataSubject
+            , IEnumerable<Feature> featuresToTrain, ref spaicial_dbEntities db)
+        {
+            //create current feature weights array
+            List<double> currentFeatureWeights = new List<double>();
+            //add bias
+            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
+
+            foreach (var feature in featuresToTrain)
+            {
+                //add current feature weight values
+                currentFeatureWeights.Add(feature.multiValue);
+            }
+
+            return currentFeatureWeights;
         }
 
         private static Matrix<Double> createTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData
