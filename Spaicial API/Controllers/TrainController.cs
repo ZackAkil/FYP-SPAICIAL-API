@@ -51,7 +51,120 @@ namespace Spaicial_API.Controllers
             var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
 
+            //get unique feature reationships
+            var featureRelationships = getFeatureRelationships(featuresToTrain);
 
+            //get dateTimes of  station data that matches with scout data and take first 100 rows
+            var datesOfCompleteData = getLatestDatesOfCompleteData(100, featuresToTrain, validScoutData,featureRelationships, ref db);
+
+
+            //fill list with dateTimes for each feature in order of the dateTimes
+            List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
+
+            foreach (var uniqueRelationship in featureRelationships)
+            {
+                ValidFeatureData fetchedValidData = new ValidFeatureData {
+                    sourceZoneId = uniqueRelationship.sourceZoneId,
+                    sourceDataSubjectId = uniqueRelationship.sourceDataSubjectId };
+
+                //fill objects list feild with data from valid dateTimes
+                fetchedValidData.values = (from value in db.StationDataPart
+                                           .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                            && (datesOfCompleteData.Any(v => v == s.StationData.dateTimeCollected)))
+                                            .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                            select value.dataValue).ToList();
+
+                fetchedValidData.valuesVector = DenseVector.OfArray(fetchedValidData.values.ToArray());
+                //add object to list obeject
+                validFeatureDataValues.Add(fetchedValidData);
+            }
+
+            //get valid scout data to be used as result data
+            var validScoutDataValues = (from dataPart in validScoutData.Where(v => datesOfCompleteData.Any(d => d == v.dateTimeCollected))
+                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId).FirstOrDefault().dataValue)).ToArray();
+
+            //create current feature weights array
+            List < double > currentFeatureWeights = new List<double>();
+
+            //add bias
+            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
+
+            //build initial matrix will first column of 1's for bias
+            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(datesOfCompleteData.Count(), 1 ,1.0);
+
+            //build up each column of the training data set
+            foreach (var feature in featuresToTrain)
+            {
+                //add current feature weight values
+                currentFeatureWeights.Add(feature.multiValue);
+
+                //get objecct conatining data relivent to current feature
+                var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId) 
+                                                    && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
+                //apply feature scalling and exponant values to stored featur data
+                double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
+
+                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
+                                                                                    .Divide(featureScale))
+                                                                                    .PointwisePower(feature.expValue));
+            }
+
+            //get scale of predicted data
+            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
+            //create vectore of result data
+            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
+            //create array of itial feature values
+            double[] intialFeatureWeights = currentFeatureWeights.ToArray();
+            //send to learning method to optimise values of feature weights
+            double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
+            var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
+            //save vnew feature values to database
+            saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain,ref db);
+
+            return Ok("hello");
+        }
+
+
+        private static IEnumerable<DateTime> getLatestDatesOfCompleteData(int numOfRows,IEnumerable<Feature> featuresToTrain,IEnumerable<ScoutData> validScoutData,List<FeatureRelationship> featureRelationships ,ref spaicial_dbEntities dbObject)
+        {
+
+
+            FeatureRelationship firstRelationship = featureRelationships.First();
+
+            //create query of valid dates that exists across all data relationships,get all data parts that match relationship
+            var validDateTimes = from dataPart in dbObject.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                 select (dataPart.StationData.dateTimeCollected);
+
+
+            //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
+            foreach (var uniqueRelationship in featureRelationships.Skip(1))
+            {
+                //store current validDateTimes so that i can be used within updating itself
+                var tempValidDateTimes = validDateTimes;
+                //for the next interation update the list of valid dates with ones that exist in each relationship
+                validDateTimes = from dataPart in dbObject.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                                   && (tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                 select (dataPart.StationData.dateTimeCollected);
+            }
+
+            //get dateTimes of  station data that matches with scout data and take first 100 rows
+            var validDatesConcideringScoutData = from dataPart in validScoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
+                                      .OrderByDescending(s => s.dateTimeCollected)
+                                      .Take(numOfRows)
+                                                 select (dataPart.dateTimeCollected);
+
+            return validDatesConcideringScoutData;
+        }
+
+        private static List<FeatureRelationship> getFeatureRelationships(IEnumerable<Feature> featuresToTrain)
+        {
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
             foreach (var feature in featuresToTrain)
@@ -69,126 +182,7 @@ namespace Spaicial_API.Controllers
                 }
             }
 
-            FeatureRelationship firstRelationship = featureRelationshps.First();
-
-            //create query of valid dates that exists across all data relationships,get all data parts that match relationship
-            var validDateTimes = from dataPart in db.StationDataPart
-                                                  .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
-                                                   && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
-                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
-                                                   select (dataPart.StationData.dateTimeCollected);
-
-
-            //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
-            foreach (var uniqueRelationship in featureRelationshps.Skip(1))
-            {
-                //store current validDateTimes so that i can be used within updating itself
-                var tempValidDateTimes = validDateTimes;
-                //for the next interation update the list of valid dates with ones that exist in each relationship
-                validDateTimes = from dataPart in db.StationDataPart
-                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
-                                                   &&(tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
-                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
-                                 select (dataPart.StationData.dateTimeCollected);
-            }
-
-            //get dateTimes of  station data that matches with scout data and take first 100 rows
-            var validDatesConcideringScoutData = from dataPart in validScoutData.Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
-                                      .OrderByDescending(s => s.dateTimeCollected)
-                                      .Take(100)
-                                      select (dataPart.dateTimeCollected);
-
-
-            //fill list with dateTimes for each feature in order of the dateTimes
-            List<ValidFeatureData> validFeatureDataValues = new List<ValidFeatureData>();
-
-            foreach (var uniqueRelationship in featureRelationshps)
-            {
-                ValidFeatureData fetchedValidData = new ValidFeatureData {
-                    sourceZoneId = uniqueRelationship.sourceZoneId,
-                    sourceDataSubjectId = uniqueRelationship.sourceDataSubjectId };
-
-                //fill objects list feild with data from valid dateTimes
-                fetchedValidData.values = (from value in db.StationDataPart
-                                           .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
-                                            && (validDatesConcideringScoutData.Any(v => v == s.StationData.dateTimeCollected)))
-                                            .OrderByDescending(s => s.StationData.dateTimeCollected)
-                                            select value.dataValue).ToList();
-
-                fetchedValidData.valuesVector = DenseVector.OfArray(fetchedValidData.values.ToArray());
-                //add object to list obeject
-                validFeatureDataValues.Add(fetchedValidData);
-            }
-
-
-            //get valid scout data to be used as result data
-            var validScoutDataValues = (from dataPart in validScoutData.Where(v => validDatesConcideringScoutData.Any(d => d == v.dateTimeCollected))
-                             select (dataPart.ScoutDataPart.Where(s => s.dataSubjectId == predictedDataSubject.dataSubjectId).FirstOrDefault().dataValue)).ToArray();
-
-            //create current feature weights array
-            List < double > currentFeatureWeights = new List<double>();
-
-            //add bias
-            currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
-
-
-            //build initial matrix will first column of 1's for bias
-            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0);
-
-
-            //build up each column of the training data set
-            foreach (var feature in featuresToTrain)
-            {
-                //add current feature weight values
-                currentFeatureWeights.Add(feature.multiValue);
-
-                //get objecct conatining data relivent to current feature
-                var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId) 
-                                                    && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
-
-                //apply feature scalling and exponant values to stored featur data
-                double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
-
-                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
-                                                                                    .Divide(featureScale))
-                                                                                    .PointwisePower(feature.expValue));
-            }
-
-            //get scale of predicted data
-            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
-
-            //create vectore of result data
-            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
-
-            //create array of itial feature values
-            double[] intialFeatureWeights = currentFeatureWeights.ToArray();
-
-            //send to learning method to optimise values of feature weights
-            double[] newFeatureWeights = Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
-
-
-            var biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
-
-            //save vnew feature values to database
-            saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain,ref db);
-
-            return Ok("hello");
-        }
-
-
-        private static List<DateTime> getDatesOfCompleteData(int numOfRows, Zone zoneToPredict, DataSubject dataToPredict){
-
-            //defining unique relationships of prediction
-             
-
-            return null;
-        }
-
-        private void fetchValidDataValues()
-        {
-
+            return featureRelationshps;
         }
 
         private void structureTrainingData()
@@ -202,10 +196,10 @@ namespace Spaicial_API.Controllers
         /// </summary>
         /// <param name="optimisedValues">newly optimised multiplier values of features</param>
         /// <param name="biasObject">bias object of specific prediction</param>
-        /// <param name="featureOdbjects">feature objects of specific prediction</param>
+        /// <param name="featureObjects">feature objects of specific prediction</param>
         /// <param name="dbObject">refference to current database connection object </param>
         /// <returns></returns>
-        private static bool saveFeatureValues(double[] optimisedValues, Bias biasObject, IEnumerable<Feature> featureOdbjects, ref spaicial_dbEntities dbObject)
+        private static bool saveFeatureValues(double[] optimisedValues,Bias biasObject,IEnumerable<Feature> featureObjects,ref spaicial_dbEntities dbObject)
         {
 
             biasObject.multiValue = optimisedValues[0];
@@ -213,7 +207,7 @@ namespace Spaicial_API.Controllers
 
             int savedIndex = 1;
 
-            foreach (var featureToSave in featureOdbjects)
+            foreach (var featureToSave in featureObjects)
             {
                 featureToSave.multiValue = optimisedValues[savedIndex];
                 dbObject.Entry(featureToSave).State = EntityState.Modified;
