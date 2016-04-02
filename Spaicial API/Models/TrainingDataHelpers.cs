@@ -24,25 +24,36 @@ namespace Spaicial_API.Models
     public class TrainingDataHelpers
     {
 
-        public static double[] getOptimisedValuesOfPrediction(Zone zoneToTrain, DataSubject predictedDataSubject
-            , IQueryable<Feature> featuresToTrain, int numberOfRowsToUse, ref spaicial_dbEntities db)
+        /// <summary>
+        /// Performs fetching and cleaning of data used to predict a specific data subject of a zone and applies 
+        /// the non-linear optimisation in order to produce newly optimises feature values.
+        /// </summary>
+        /// <param name="zoneToTrain">zone which is being predicted</param>
+        /// <param name="predictedDataSubject">data subject that is being predicted</param>
+        /// <param name="numberOfRowsToUse">number of rows to uses as training data</param>
+        /// <param name="db">reference to database object connection</param>
+        /// <returns></returns>
+        public static double[] GetOptimisedValuesOfPrediction(Zone zoneToTrain, DataSubject predictedDataSubject
+            , int numberOfRowsToUse, ref spaicial_dbEntities db)
         {
+            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
+                                                                       && (f.predictedZoneId == zoneToTrain.zoneId));
 
             //get scout data that is in the area of the zone and has the data subject we want to predict
             var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
                 .Where(s => s.locationPoint.Intersects(zoneToTrain.locationArea));
             //store unique feature relationships ignoring exponants
-            List<FeatureRelationship> featureRelationshps = getUniqueFeatureRelationships(featuresToTrain);
+            List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships(featuresToTrain);
             //get dateTimes of complete data and take first 100 rows
-            var validDatesConcideringScoutData = getLatestDatesOfCompleteData(numberOfRowsToUse, featuresToTrain, validScoutData, featureRelationshps, ref db);
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(numberOfRowsToUse, featuresToTrain, validScoutData, featureRelationshps, ref db);
             //get list of data per unquie feature relationship 
-            List<ValidFeatureData> validFeatureDataValues = getFeatureData(featureRelationshps, validDatesConcideringScoutData, ref db);
+            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(featureRelationshps, validDatesConcideringScoutData, ref db);
             //get valid scout data to be used as result data
-            double[] validScoutDataValues = getScoutData(validScoutData, validDatesConcideringScoutData, predictedDataSubject);
+            double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData, predictedDataSubject);
             //create current feature weights array
-            List<double> currentFeatureWeights = getCurrentFeatureWeights(zoneToTrain, predictedDataSubject, featuresToTrain, ref db);
+            List<double> currentFeatureWeights = GetCurrentFeatureWeights(zoneToTrain, predictedDataSubject, featuresToTrain, ref db);
             //create training data matrix
-            Matrix<Double> trainingDataMatrix = createTrainingDataMatrix(validDatesConcideringScoutData, featuresToTrain, validFeatureDataValues);
+            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, featuresToTrain, validFeatureDataValues);
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
@@ -53,7 +64,7 @@ namespace Spaicial_API.Models
             return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
         }
 
-        private static double[] getScoutData(IQueryable<ScoutData> validScoutData, IQueryable<DateTime> validDatesConcideringScoutData
+        private static double[] GetScoutData(IQueryable<ScoutData> validScoutData, IQueryable<DateTime> validDatesConcideringScoutData
             , DataSubject predictedDataSubject)
         {
 
@@ -66,7 +77,7 @@ namespace Spaicial_API.Models
             return validScoutDataValues;
         }
 
-        private static List<double> getCurrentFeatureWeights(Zone zoneToTrain, DataSubject predictedDataSubject
+        private static List<double> GetCurrentFeatureWeights(Zone zoneToTrain, DataSubject predictedDataSubject
             , IQueryable<Feature> featuresToTrain, ref spaicial_dbEntities db)
         {
             //create current feature weights array
@@ -83,7 +94,7 @@ namespace Spaicial_API.Models
             return currentFeatureWeights;
         }
 
-        private static Matrix<Double> createTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData
+        private static Matrix<Double> CreateTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData
             , IQueryable<Feature> featuresToTrain, List<ValidFeatureData> validFeatureDataValues)
         {
             Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1, 1.0);
@@ -103,7 +114,7 @@ namespace Spaicial_API.Models
             return trainingDataMatrix;
         }
 
-        private static List<ValidFeatureData> getFeatureData(IList<FeatureRelationship> featureRelationships
+        private static List<ValidFeatureData> GetFeatureData(IList<FeatureRelationship> featureRelationships
             , IQueryable<DateTime> validDatesConcideringScoutData, ref spaicial_dbEntities db)
         {
 
@@ -133,7 +144,7 @@ namespace Spaicial_API.Models
             return validFeatureDataValues;
         }
 
-        private static IQueryable<DateTime> getLatestDatesOfCompleteData(int numOfRows, IQueryable<Feature> featuresToTrain
+        private static IQueryable<DateTime> GetLatestDatesOfCompleteData(int numOfRows, IQueryable<Feature> featuresToTrain
             , IQueryable<ScoutData> validScoutData, List<FeatureRelationship> featureRelationships, ref spaicial_dbEntities db)
         {
 
@@ -170,7 +181,7 @@ namespace Spaicial_API.Models
             return validDatesConcideringScoutData;
         }
 
-        private static List<FeatureRelationship> getUniqueFeatureRelationships(IQueryable<Feature> featuresToTrain)
+        private static List<FeatureRelationship> GetUniqueFeatureRelationships(IQueryable<Feature> featuresToTrain)
         {
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = new List<FeatureRelationship>();
