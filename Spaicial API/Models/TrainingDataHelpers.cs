@@ -29,7 +29,6 @@ namespace Spaicial_API.Models
             public int sourceDataSubjectId;
         }
 
-
         /// <summary>
         /// Performs fetching and cleaning of data used to predict a specific data subject of a zone and applies 
         /// the non-linear optimisation in order to produce newly optimises feature values.
@@ -38,7 +37,7 @@ namespace Spaicial_API.Models
         /// <param name="predictedDataSubject">data subject that is being predicted</param>
         /// <param name="numberOfRowsToUse">number of rows to uses as training data</param>
         /// <param name="db">reference to database object connection</param>
-        /// <returns></returns>
+        /// <returns>array of optimised values of feature weights</returns>
         public static double[] GetOptimisedValuesOfPrediction(Zone zoneToTrain, DataSubject predictedDataSubject
             , int numberOfRowsToUse, ref spaicial_dbEntities db)
         {
@@ -76,7 +75,7 @@ namespace Spaicial_API.Models
         /// <param name="zoneToTrain">zone you want to predict</param>
         /// <param name="predictedDataSubject">data subject you want to predict</param>
         /// <param name="db">reference to your database connection object</param>
-        /// <returns></returns>
+        /// <returns>DateTime object of latest row of complete data</returns>
         public static DateTime GetLatestCompleteRow(Zone zoneToTrain, DataSubject predictedDataSubject
             , ref spaicial_dbEntities db)
         {

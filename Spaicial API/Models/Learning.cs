@@ -23,7 +23,7 @@ namespace Spaicial_API.Models
         /// </summary>
         /// <param name="featureValues">matrix of feature values</param>
         /// <param name="theta">vector of learnt feature weights </param>
-        /// <returns></returns>
+        /// <returns>vectore of predictions</returns>
         public static Vector<Double> PredictFunction(Matrix<Double> featureValues, Vector<Double> theta)
         {
             return SigmoidFunction(featureValues * theta);
