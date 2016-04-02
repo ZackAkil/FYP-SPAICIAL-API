@@ -66,23 +66,15 @@ namespace Spaicial_API.Controllers
             List < double > currentFeatureWeights = new List<double>();
             //add bias
             currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
-            //build initial matrix will first column of 1's for bias
-            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1 ,1.0);
-            //build up each column of the training data set
+
             foreach (var feature in featuresToTrain)
             {
                 //add current feature weight values
                 currentFeatureWeights.Add(feature.multiValue);
-                //get objecct conatining data relivent to current feature
-                var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId) 
-                                                    && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
-                //apply feature scalling and exponant values to stored featur data
-                double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
-
-                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
-                                                                                    .Divide(featureScale))
-                                                                                    .PointwisePower(feature.expValue));
             }
+
+            //create training data matrix
+            Matrix<Double> trainingDataMatrix = createTrainingDataMatrix(validDatesConcideringScoutData, featuresToTrain, validFeatureDataValues);
 
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
@@ -97,6 +89,26 @@ namespace Spaicial_API.Controllers
             saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
 
             return Ok("hello");
+        }
+
+        private static Matrix<Double> createTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData
+            , IEnumerable<Feature> featuresToTrain, List<ValidFeatureData> validFeatureDataValues)
+        {
+            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1, 1.0);
+            //build up each column of the training data set
+            foreach (var feature in featuresToTrain)
+            {
+                //get objecct conatining data relivent to current feature
+                var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId)
+                                                    && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
+                //apply feature scalling and exponant values to stored featur data
+                double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
+
+                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
+                                                                                    .Divide(featureScale))
+                                                                                    .PointwisePower(feature.expValue));
+            }
+            return trainingDataMatrix;
         }
 
         private static List<ValidFeatureData> getFeatureData(IList<FeatureRelationship> featureRelationships
@@ -130,7 +142,7 @@ namespace Spaicial_API.Controllers
         }
 
         private static IQueryable<DateTime> getLatestDatesOfCompleteData(int numOfRows, IEnumerable<Feature> featuresToTrain
-            ,IQueryable<ScoutData> validScoutData, List<FeatureRelationship> featureRelationships,ref spaicial_dbEntities db)
+            , IQueryable<ScoutData> validScoutData, List<FeatureRelationship> featureRelationships,ref spaicial_dbEntities db)
         {
 
             FeatureRelationship firstRelationship = featureRelationships.First();
