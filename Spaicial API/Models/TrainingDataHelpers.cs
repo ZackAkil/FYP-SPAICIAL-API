@@ -7,22 +7,28 @@ using System.Web;
 
 namespace Spaicial_API.Models
 {
-    public class FeatureRelationship
-    {
-        public int sourceZoneId;
-        public int sourceDataSubjectId;
-    }
 
-    public class ValidFeatureData
-    {
-        public List<double> values;
-        public Vector<double> valuesVector;
-        public int sourceZoneId;
-        public int sourceDataSubjectId;
-    }
 
-    public class TrainingDataHelpers
+    /// <summary>
+    /// Class with static helper methods for fetching, cleaning executing the non-linear optimisation
+    /// </summary>
+    public static class TrainingDataHelpers
     {
+
+        private class FeatureRelationship
+        {
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
+
+        private class ValidFeatureData
+        {
+            public List<double> values;
+            public Vector<double> valuesVector;
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
+
 
         /// <summary>
         /// Performs fetching and cleaning of data used to predict a specific data subject of a zone and applies 

@@ -1,8 +1,4 @@
-﻿using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using Spaicial_API.Models;
-using System;
-using System.Collections.Generic;
+﻿using Spaicial_API.Models;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +12,12 @@ namespace Spaicial_API.Controllers
 
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
+        /// <summary>
+        /// Trains the specified zones prediction of the specified data subject
+        /// </summary>
+        /// <param name="id">id of predicted zone to be trained</param>
+        /// <param name="dataSubject">lable of the data subject to be trained</param>
+        /// <returns></returns>
         // GET: api/Train?id=3&dataSubject=wind%20speed
         [ResponseType(typeof(string))]
         public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject)
@@ -32,7 +34,7 @@ namespace Spaicial_API.Controllers
 
             IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
                                                             && (f.predictedZoneId == zoneToTrain.zoneId));
-            saveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
+            SaveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
 
             return Ok("hello");
 
@@ -47,7 +49,7 @@ namespace Spaicial_API.Controllers
         /// <param name="featuresToTrain">feature objects of specific prediction</param>
         /// <param name="dbObject">refference to current database connection object </param>
         /// <returns></returns>
-        private bool saveFeatureValues(double[] optimisedValues, Bias biasObject, IQueryable<Feature> featuresToTrain)
+        private bool SaveFeatureValues(double[] optimisedValues, Bias biasObject, IQueryable<Feature> featuresToTrain)
         {
             biasObject.multiValue = optimisedValues[0];
             db.Entry(biasObject).State = EntityState.Modified;
