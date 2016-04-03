@@ -1,31 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
-  <Class Name="Spaicial_API.Models.TrainingDataHelpers">
-    <Position X="9.5" Y="2.5" Width="2.5" />
-    <Compartments>
-      <Compartment Name="Nested Types" Collapsed="false" />
-    </Compartments>
-    <NestedTypes>
-      <Class Name="Spaicial_API.Models.TrainingDataHelpers.FeatureRelationship">
-        <TypeIdentifier>
-          <NewMemberFileName>Models\TrainingDataHelpers.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Class Name="Spaicial_API.Models.TrainingDataHelpers.ValidFeatureData">
-        <TypeIdentifier>
-          <NewMemberFileName>Models\TrainingDataHelpers.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
-    <TypeIdentifier>
-      <HashCode>ICAAAAAQAAAAAQCAAEAAAAAAAAAABAAAAAAAAAAAAEA=</HashCode>
-      <FileName>Models\TrainingDataHelpers.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Spaicial_API.Controllers.TrainController">
-    <Position X="6" Y="1" Width="2" />
+    <Position X="3.5" Y="3.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAQBAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAQBAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controllers\TrainController.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -44,31 +22,81 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.DataCollector">
-    <Position X="1" Y="3.5" Width="1.5" />
+    <Position X="6.5" Y="1" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACQAAAAAAQAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.ScoutDataCollector">
-    <Position X="3" Y="6" Width="1.5" />
+    <Position X="8.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAACAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.StationDataCollector">
-    <Position X="1" Y="6" Width="1.5" />
+    <Position X="6.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Learning">
-    <Position X="6" Y="5.25" Width="2" />
+    <Position X="8" Y="6.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAAAgAAAIAA=</HashCode>
       <FileName>Models\Learning.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Spaicial_API.Controllers.PredictController">
+    <Position X="1" Y="3.75" Width="2" />
+    <NestedTypes>
+      <Class Name="Spaicial_API.Controllers.PredictController.PredictionResponse" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Controllers\PredictController.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAQAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Controllers\PredictController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Spaicial_API.Models.SpacialML">
+    <Position X="10.75" Y="1" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Spaicial_API.Models.SpacialML.FeatureRelationship" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Models\SpacialML.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Spaicial_API.Models.SpacialML.ValidFeatureData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Models\SpacialML.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ACAEAAAQAAAQAQCAAAAAYAAAAAIABAAAgAAAAAAAAEA=</HashCode>
+      <FileName>Models\SpacialML.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Spaicial_API.Models.Trainer">
+    <Position X="10.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\SpacialML.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Spaicial_API.Models.Predictor">
+    <Position X="13.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAIAAAAAAAAAAAAAAAAAAAAAAAQAAAAAEAAAAA=</HashCode>
+      <FileName>Models\SpacialML.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

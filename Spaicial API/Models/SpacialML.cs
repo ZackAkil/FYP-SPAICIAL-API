@@ -7,22 +7,24 @@ using System.Web;
 
 namespace Spaicial_API.Models
 {
-    public class FeatureRelationship
-    {
-        public int sourceZoneId;
-        public int sourceDataSubjectId;
-    }
 
-    public class ValidFeatureData
-    {
-        public List<double> values;
-        public Vector<double> valuesVector;
-        public int sourceZoneId;
-        public int sourceDataSubjectId;
-    }
 
     public class SpacialML
     {
+        protected class FeatureRelationship
+        {
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
+
+        protected class ValidFeatureData
+        {
+            public List<double> values;
+            public Vector<double> valuesVector;
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
+
         protected spaicial_dbEntities db = new spaicial_dbEntities();
 
         protected Zone predictedZone;

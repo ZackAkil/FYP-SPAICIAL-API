@@ -14,7 +14,19 @@ namespace Spaicial_API.Models
     public static class TrainingDataHelpers
     {
 
+        private class FeatureRelationship
+        {
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
 
+        private class ValidFeatureData
+        {
+            public List<double> values;
+            public Vector<double> valuesVector;
+            public int sourceZoneId;
+            public int sourceDataSubjectId;
+        }
 
         /// <summary>
         /// Performs fetching and cleaning of data used to predict a specific data subject of a zone and applies 
