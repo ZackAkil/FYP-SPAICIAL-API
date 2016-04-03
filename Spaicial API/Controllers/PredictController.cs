@@ -35,11 +35,13 @@ namespace Spaicial_API.Controllers
             }
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
+            SpacialML predictor = new SpacialML(zoneToTrain, predictedDataSubject);
+
             // get feature data matrix
-            Matrix<Double> featureData = TrainingDataHelpers.GetTrainingDataMatrix(zoneToTrain, predictedDataSubject,1,ref db);
+            Matrix<Double> featureData = predictor.GetTrainingDataMatrix(1);
 
             //get feature weights
-            double[] currentFeatureWeights = TrainingDataHelpers.GetCurrentFeatureWeights(zoneToTrain, predictedDataSubject, ref db);
+            double[] currentFeatureWeights = predictor.GetFeatureWeights();
             Vector<Double> theta = DenseVector.OfArray(currentFeatureWeights);
 
             //get prediction calculation
@@ -51,7 +53,7 @@ namespace Spaicial_API.Controllers
 
             DateTime latestDataUsed = TrainingDataHelpers.GetLatestCompleteRow(zoneToTrain, predictedDataSubject, ref db);
 
-            return Ok(new PredictionResponse { value = prediction , latestDataUsed = latestDataUsed });
+            return Ok(new PredictionResponse { value = prediction, latestDataUsed = latestDataUsed });
         }
 
 

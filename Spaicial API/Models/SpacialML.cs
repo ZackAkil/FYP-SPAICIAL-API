@@ -140,7 +140,7 @@ namespace Spaicial_API.Models
             return validScoutDataValues;
         }
 
-        private double[] GetFeatureWeights()
+        public double[] GetFeatureWeights()
         {
             //create current feature weights array
             List<double> currentFeatureWeights = new List<double>();
@@ -199,7 +199,7 @@ namespace Spaicial_API.Models
             return trainingDataMatrix;
         }
 
-        public double[] GetOptimisedValuesOfPrediction(,int numberOfRowsToUse)
+        public double[] GetOptimisedValuesOfPrediction(int numberOfRowsToUse)
         {
             //get scout data that is in the area of the zone and has the data subject we want to predict
             var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
