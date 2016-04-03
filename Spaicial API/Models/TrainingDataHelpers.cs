@@ -56,7 +56,7 @@ namespace Spaicial_API.Models
             //get valid scout data to be used as result data
             double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData, predictedDataSubject);
             //create current feature weights array
-            List<double> currentFeatureWeights = GetCurrentFeatureWeights(zoneToTrain, predictedDataSubject, featuresToTrain, ref db);
+            double[] currentFeatureWeights = GetCurrentFeatureWeights(zoneToTrain, predictedDataSubject, ref db);
             //create training data matrix
             Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, featuresToTrain, validFeatureDataValues);
             //get scale of predicted data
@@ -64,7 +64,7 @@ namespace Spaicial_API.Models
             //create vectore of result data
             Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
             //create array of itial feature values
-            double[] intialFeatureWeights = currentFeatureWeights.ToArray();
+            double[] intialFeatureWeights = currentFeatureWeights;
             //send to learning method to optimise values of feature weights
             return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
         }
@@ -106,21 +106,31 @@ namespace Spaicial_API.Models
             return validScoutDataValues;
         }
 
-        private static List<double> GetCurrentFeatureWeights(Zone zoneToTrain, DataSubject predictedDataSubject
-            , IQueryable<Feature> featuresToTrain, ref spaicial_dbEntities db)
+        /// <summary>
+        /// Gets array of all feature weight involved in a prediction including bias 
+        /// </summary>
+        /// <param name="zoneToTrain">zone you want to predict</param>
+        /// <param name="predictedDataSubject">data subject you want to predict</param>
+        /// <param name="featuresToTrain"></param>
+        /// <param name="db"></param>
+        /// <returns>array of doubles containing feature weight beginning with bias</returns>
+        public static double[] GetCurrentFeatureWeights(Zone zoneToTrain, DataSubject predictedDataSubject
+            , ref spaicial_dbEntities db)
         {
             //create current feature weights array
             List<double> currentFeatureWeights = new List<double>();
             //add bias
             currentFeatureWeights.Add(db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId).multiValue);
 
+            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
+                                                                       && (f.predictedZoneId == zoneToTrain.zoneId));
             foreach (var feature in featuresToTrain)
             {
                 //add current feature weight values
                 currentFeatureWeights.Add(feature.multiValue);
             }
 
-            return currentFeatureWeights;
+            return currentFeatureWeights.ToArray();
         }
 
         private static Matrix<Double> CreateTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData

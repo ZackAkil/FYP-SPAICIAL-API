@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
   <Class Name="Spaicial_API.Models.TrainingDataHelpers">
-    <Position X="8.75" Y="1.75" Width="2.5" />
+    <Position X="9.5" Y="2.5" Width="2.5" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -18,14 +18,14 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>ICAAAAAQAAAAAQCAAAAAAAAAAAAABAAAAAAAAAAAAEA=</HashCode>
+      <HashCode>ICAAAAAQAAAAAQCAAEAAAAAAAAAABAAAAAAAAAAAAEA=</HashCode>
       <FileName>Models\TrainingDataHelpers.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Controllers.TrainController">
     <Position X="6" Y="1" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAQBAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAQBAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controllers\TrainController.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -44,24 +44,31 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.DataCollector">
-    <Position X="1" Y="3.25" Width="1.5" />
+    <Position X="1" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACQAAAAAAQAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.ScoutDataCollector">
-    <Position X="3" Y="5.75" Width="1.5" />
+    <Position X="3" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAACAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.StationDataCollector">
-    <Position X="1" Y="5.75" Width="1.5" />
+    <Position X="1" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Spaicial_API.Models.Learning">
+    <Position X="6" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAAAgAAAIAA=</HashCode>
+      <FileName>Models\Learning.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

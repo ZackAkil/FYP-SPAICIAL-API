@@ -1,4 +1,6 @@
-﻿using Spaicial_API.Models;
+﻿using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using Spaicial_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,8 +39,14 @@ namespace Spaicial_API.Controllers
             DateTime latestRowDate =  TrainingDataHelpers.GetLatestCompleteRow(zoneToTrain, predictedDataSubject, ref db);
 
             //get data on that date for the feature relationships
-            
+
             //apply feature scaling and feature transposes 
+
+
+            //get feature weights
+            double[] currentFeatureWeights = TrainingDataHelpers.GetCurrentFeatureWeights(zoneToTrain, predictedDataSubject, ref db);
+
+            Vector<Double> theta = DenseVector.OfArray(currentFeatureWeights); 
 
             //pass data to learning class to get prediction
 

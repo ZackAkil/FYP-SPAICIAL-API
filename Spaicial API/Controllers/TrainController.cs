@@ -17,7 +17,7 @@ namespace Spaicial_API.Controllers
         /// </summary>
         /// <param name="id">id of predicted zone to be trained</param>
         /// <param name="dataSubject">lable of the data subject to be trained</param>
-        /// <returns></returns>
+        /// <returns>test response hello if successful</returns>
         // GET: api/Train?id=3&dataSubject=wind%20speed
         [ResponseType(typeof(string))]
         public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject)
@@ -48,7 +48,7 @@ namespace Spaicial_API.Controllers
         /// <param name="biasObject">bias object of specific prediction</param>
         /// <param name="featuresToTrain">feature objects of specific prediction</param>
         /// <param name="dbObject">refference to current database connection object </param>
-        /// <returns></returns>
+        /// <returns>boolean true if successful</returns>
         private bool SaveFeatureValues(double[] optimisedValues, Bias biasObject, IQueryable<Feature> featuresToTrain)
         {
             biasObject.multiValue = optimisedValues[0];
