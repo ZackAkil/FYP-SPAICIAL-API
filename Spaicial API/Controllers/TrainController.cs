@@ -63,7 +63,18 @@ namespace Spaicial_API.Controllers
             db.SaveChanges();
             return true;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
+
+
 
 
 }
