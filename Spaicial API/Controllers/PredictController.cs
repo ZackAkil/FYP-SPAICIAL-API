@@ -35,25 +35,11 @@ namespace Spaicial_API.Controllers
             }
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
-            SpacialML predictor = new SpacialML(zoneToTrain, predictedDataSubject);
+            Predictor predictor = new Predictor(zoneToTrain, predictedDataSubject);
 
-            // get feature data matrix
-            Matrix<Double> featureData = predictor.GetTrainingDataMatrix(1);
-
-            //get feature weights
-            double[] currentFeatureWeights = predictor.GetFeatureWeights();
-            Vector<Double> theta = DenseVector.OfArray(currentFeatureWeights);
-
-            //get prediction calculation
-            double prediction = (Learning.PredictFunction(featureData, theta))[0];
-
-            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
-
-            prediction = prediction * predictionScale;
-
-            DateTime latestDataUsed = TrainingDataHelpers.GetLatestCompleteRow(zoneToTrain, predictedDataSubject, ref db);
-
-            return Ok(new PredictionResponse { value = prediction, latestDataUsed = latestDataUsed });
+            predictor.GetPrediction();
+           
+            return Ok(new PredictionResponse { value = predictor.predictionValue, latestDataUsed = predictor.predictionAge });
         }
 
 
