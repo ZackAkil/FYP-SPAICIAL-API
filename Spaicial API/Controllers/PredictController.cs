@@ -23,7 +23,7 @@ namespace Spaicial_API.Controllers
 
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
-        // GET: api/ScoutData/5
+        // GET: api/Predict?id=3&dataSubject=wind%20speed
         [ResponseType(typeof(PredictionResponse))]
         public async Task<IHttpActionResult> GetPrediction(int id, string dataSubject)
         {
@@ -35,25 +35,33 @@ namespace Spaicial_API.Controllers
             }
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
-            //get latest complete record
-            DateTime latestRowDate =  TrainingDataHelpers.GetLatestCompleteRow(zoneToTrain, predictedDataSubject, ref db);
-
-            //get data on that date for the feature relationships
-
-            //apply feature scaling and feature transposes 
-
+            // get feature data matrix
+            Matrix<Double> featureData = TrainingDataHelpers.GetTrainingDataMatrix(zoneToTrain, predictedDataSubject,1,ref db);
 
             //get feature weights
             double[] currentFeatureWeights = TrainingDataHelpers.GetCurrentFeatureWeights(zoneToTrain, predictedDataSubject, ref db);
+            Vector<Double> theta = DenseVector.OfArray(currentFeatureWeights);
 
-            Vector<Double> theta = DenseVector.OfArray(currentFeatureWeights); 
+            //get prediction calculation
+            double prediction = (Learning.PredictFunction(featureData, theta))[0];
 
-            //pass data to learning class to get prediction
+            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
 
+            prediction = prediction * predictionScale;
 
-            return Ok(new PredictionResponse { value = 0.0 , latestDataUsed = latestRowDate });
+            DateTime latestDataUsed = TrainingDataHelpers.GetLatestCompleteRow(zoneToTrain, predictedDataSubject, ref db);
+
+            return Ok(new PredictionResponse { value = prediction , latestDataUsed = latestDataUsed });
         }
 
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

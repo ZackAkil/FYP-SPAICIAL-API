@@ -8,9 +8,8 @@ using System.Web;
 namespace Spaicial_API.Models
 {
 
-
     /// <summary>
-    /// Class with static helper methods for fetching, cleaning executing the non-linear optimisation
+    /// Class with static helper methods for fetching, cleaning training data and executing the feature weight optimisation
     /// </summary>
     public static class TrainingDataHelpers
     {
@@ -107,7 +106,7 @@ namespace Spaicial_API.Models
         }
 
         /// <summary>
-        /// Gets array of all feature weight involved in a prediction including bias 
+        /// Gets array of all feature weights involved in a prediction including bias 
         /// </summary>
         /// <param name="zoneToTrain">zone you want to predict</param>
         /// <param name="predictedDataSubject">data subject you want to predict</param>
@@ -238,6 +237,39 @@ namespace Spaicial_API.Models
                 }
             }
             return featureRelationshps;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="zoneToPredict"></param>
+        /// <param name="dataSubjectToPredict"></param>
+        /// <param name="rowsToGet"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public static Matrix<Double> GetTrainingDataMatrix(Zone zoneToPredict, DataSubject dataSubjectToPredict,int rowsToGet, ref spaicial_dbEntities db)
+        {
+
+            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == dataSubjectToPredict.dataSubjectId)
+                                                                      && (f.predictedZoneId == zoneToPredict.zoneId));
+
+            //get scout data that is in the area of the zone and has the data subject we want to predict
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == dataSubjectToPredict.dataSubjectId)))
+                .Where(s => s.locationPoint.Intersects(zoneToPredict.locationArea));
+            //store unique feature relationships ignoring exponants
+            List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships(featuresToTrain);
+            //get dateTimes of complete data and take first 100 rows
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(rowsToGet, featuresToTrain, validScoutData, featureRelationshps, ref db);
+            //get list of data per unquie feature relationship 
+            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(featureRelationshps, validDatesConcideringScoutData, ref db);
+            //get valid scout data to be used as result data
+            double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData, dataSubjectToPredict);
+            //create current feature weights array
+            double[] currentFeatureWeights = GetCurrentFeatureWeights(zoneToPredict, dataSubjectToPredict, ref db);
+            //create training data matrix
+            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, featuresToTrain, validFeatureDataValues);
+
+            return trainingDataMatrix;
         }
 
     }
