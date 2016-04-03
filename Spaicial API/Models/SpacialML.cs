@@ -234,6 +234,10 @@ namespace Spaicial_API.Models
             
         }
 
+        public double[] GetTrainedFeatureValues(int rowsToUse)
+        {
+            return GetOptimisedValuesOfPrediction(rowsToUse);
+        }
     }
 
     public class Predictor : SpacialML

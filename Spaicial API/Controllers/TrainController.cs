@@ -29,15 +29,17 @@ namespace Spaicial_API.Controllers
                 return NotFound();
             }
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
-            double[] newFeatureWeights = TrainingDataHelpers.GetOptimisedValuesOfPrediction(zoneToTrain,predictedDataSubject,10, ref db);
-            Bias biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
 
+            Trainer trainer = new Trainer(zoneToTrain, predictedDataSubject);
+
+            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(10);
+
+            Bias biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
             IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
                                                             && (f.predictedZoneId == zoneToTrain.zoneId));
             SaveFeatureValues(newFeatureWeights, biasToUpdate, featuresToTrain);
 
             return Ok("Training Complete");
-
         }
 
         /// <summary>
