@@ -158,5 +158,73 @@ namespace Spaicial_API.Models
             return currentFeatureWeights.ToArray();
         }
 
+        private Matrix<Double> CreateTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData, List<ValidFeatureData> validFeatureDataValues)
+        {
+            Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1, 1.0);
+            //build up each column of the training data set
+            foreach (var feature in featuresToPredict)
+            {
+                //get objecct conatining data relivent to current feature
+                var currentFeatureData = validFeatureDataValues.Where(v => (v.sourceZoneId == feature.sourceZoneId)
+                                                    && (v.sourceDataSubjectId == feature.sourceDataSubjectId)).First();
+                //apply feature scalling and exponant values to stored featur data
+                double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
+
+                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
+                                                                                    .Divide(featureScale))
+                                                                                    .PointwisePower(feature.expValue));
+            }
+            return trainingDataMatrix;
+        }
+
+        public Matrix<Double> GetTrainingDataMatrix(int rowsToGet)
+        {
+
+            //get scout data that is in the area of the zone and has the data subject we want to predict
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
+                .Where(s => s.locationPoint.Intersects(predictedZone.locationArea));
+            //store unique feature relationships ignoring exponants
+            List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
+            //get dateTimes of complete data and take first 100 rows
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(rowsToGet,validScoutData);
+            //get list of data per unquie feature relationship 
+            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDatesConcideringScoutData);
+            //get valid scout data to be used as result data
+            double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData);
+            //create current feature weights array
+            double[] currentFeatureWeights = GetFeatureWeights();
+            //create training data matrix
+            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
+
+            return trainingDataMatrix;
+        }
+
+        public double[] GetOptimisedValuesOfPrediction(,int numberOfRowsToUse)
+        {
+            //get scout data that is in the area of the zone and has the data subject we want to predict
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
+                .Where(s => s.locationPoint.Intersects(predictedZone.locationArea));
+            //store unique feature relationships ignoring exponants
+            List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
+            //get dateTimes of complete data and take first 100 rows
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(numberOfRowsToUse, validScoutData);
+            //get list of data per unquie feature relationship 
+            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDatesConcideringScoutData);
+            //get valid scout data to be used as result data
+            double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData);
+            //create current feature weights array
+            double[] currentFeatureWeights = GetFeatureWeights();
+            //create training data matrix
+            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
+            //get scale of predicted data
+            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
+            //create vectore of result data
+            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
+            //create array of itial feature values
+            double[] intialFeatureWeights = currentFeatureWeights;
+            //send to learning method to optimise values of feature weights
+            return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
+        }
+
     }
 }
