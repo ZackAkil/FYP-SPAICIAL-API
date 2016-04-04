@@ -61,9 +61,9 @@ namespace Spaicial_API.Models
         {
             double[] xInitial = theta;
             double[] xLower = new double[theta.Length];
-            xLower.Populate(-10);
+            xLower.Populate(-100);
             double[] xUpper = new double[theta.Length];
-            xUpper.Populate(10);
+            xUpper.Populate(100);
 
             var solution = NelderMeadSolver.Solve(x => CostFunction(x, featureData, results), xInitial, xLower, xUpper);
 

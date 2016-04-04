@@ -32,7 +32,7 @@ namespace Spaicial_API.Controllers
 
             Trainer trainer = new Trainer(zoneToTrain, predictedDataSubject);
 
-            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(10);
+            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(100);
 
             Bias biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
             IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)

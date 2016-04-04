@@ -144,6 +144,8 @@ namespace Spaicial_API.Models
 
         public double[] GetFeatureWeights()
         {
+            //impliment check for bias and feature existing
+
             //create current feature weights array
             List<double> currentFeatureWeights = new List<double>();
             //add bias
