@@ -188,6 +188,7 @@
     <Compile Include="Models\ApiKey.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ApiKeyCheck.cs" />
     <Compile Include="Models\ArrayExtension.cs" />
     <Compile Include="Models\Bias.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>

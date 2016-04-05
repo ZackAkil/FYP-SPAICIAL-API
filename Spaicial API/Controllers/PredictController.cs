@@ -27,7 +27,7 @@ namespace Spaicial_API.Controllers
         [ResponseType(typeof(PredictionResponse))]
         public async Task<IHttpActionResult> GetPrediction(int id, string dataSubject, string apiKey)
         {
-            CheckApiKey(apiKey);
+            ApiKeyAuthentication.CheckApiKey(apiKey,ref db);
 
             Zone zoneToTrain = await db.Zone.FindAsync(id);
             if (zoneToTrain == null)
@@ -43,36 +43,7 @@ namespace Spaicial_API.Controllers
             return Ok(new PredictionResponse { value = predictor.predictionValue, latestDataUsed = predictor.predictionAge });
         }
 
-        private void CheckApiKey(string apiKey)
-        {
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                var response = new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
-                {
-                    Content = new StringContent("No API key"),
-                    ReasonPhrase = "The API key was not supplied."
-                });
 
-                var challenge = new AuthenticationHeaderValue("valid_ApiKey_required");
-                response.Response.Headers.WwwAuthenticate.Add(challenge);
-
-                throw response;
-
-            }
-            else if (!db.ApiKey.Any(a => a.keyValue == apiKey))
-            {
-                var response = new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
-                {
-                    Content = new StringContent("Invalid API key"),
-                    ReasonPhrase = "The API key used does not exist in the system."
-                });
-
-                var challenge = new AuthenticationHeaderValue("valid_ApiKey_required");
-                response.Response.Headers.WwwAuthenticate.Add(challenge);
-
-                throw response;
-            }
-        }
 
 
         protected override void Dispose(bool disposing)
