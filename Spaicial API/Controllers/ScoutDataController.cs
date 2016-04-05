@@ -72,6 +72,12 @@ namespace Spaicial_API.Controllers
         //}
 
         // POST: api/ScoutData
+
+            /// <summary>
+            /// Parses and submits scout data into data base.
+            /// </summary>
+            /// <param name="scoutDataCollector">data conatiner for scout data</param>
+            /// <returns>structure of input data if succeful</returns>
         [ResponseType(typeof(ScoutData))]
         public async Task<IHttpActionResult> PostScoutData(ScoutDataCollector scoutDataCollector)
         {

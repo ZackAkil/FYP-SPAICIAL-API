@@ -12,6 +12,8 @@ namespace Spaicial_API.Controllers
 
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
+        private const int trainingRows = 100;
+
         /// <summary>
         /// Trains the specified zones prediction of the specified data subject
         /// </summary>
@@ -34,7 +36,7 @@ namespace Spaicial_API.Controllers
 
             Trainer trainer = new Trainer(zoneToTrain, predictedDataSubject);
 
-            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(100);
+            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(trainingRows);
 
             Bias biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
             IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
