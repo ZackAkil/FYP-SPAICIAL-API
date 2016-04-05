@@ -20,14 +20,16 @@ namespace Spaicial_API.Controllers
         /// <returns>message if successful</returns>
         // GET: api/Train?id=3&dataSubject=wind%20speed
         [ResponseType(typeof(string))]
-        public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject)
+        public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject, string apiKey)
         {
+            ApiKeyAuthentication.CheckApiKey(apiKey, ref db);
 
             Zone zoneToTrain = await db.Zone.FindAsync(id);
             if (zoneToTrain == null)
             {
                 return NotFound();
             }
+
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
             Trainer trainer = new Trainer(zoneToTrain, predictedDataSubject);

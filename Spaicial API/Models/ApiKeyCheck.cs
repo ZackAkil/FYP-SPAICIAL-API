@@ -9,6 +9,9 @@ using System.Web.Http;
 
 namespace Spaicial_API.Models
 {
+    /// <summary>
+    /// Class for checking validity of api keys
+    /// </summary>
     public static class ApiKeyAuthentication
     {
         /// <summary>
@@ -103,8 +106,5 @@ namespace Spaicial_API.Models
             }
 
         }
-
-
-
     }
 }

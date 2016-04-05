@@ -80,6 +80,14 @@ namespace Spaicial_API.Controllers
                 return BadRequest(ModelState);
             }
 
+            Zone stationZone = await db.Zone.FindAsync(stationDataCollector.zoneId);
+            if (stationZone == null)
+            {
+                return NotFound();
+            }
+
+            ApiKeyAuthentication.CheckApiKey(stationDataCollector.apiKey, stationZone, ref db);
+
             int apiKeyId = db.ApiKey.Where(a => a.keyValue == stationDataCollector.apiKey).First().apiKeyId;
 
             StationData stationData = stationDataCollector.ConvertToDb(apiKeyId,db);

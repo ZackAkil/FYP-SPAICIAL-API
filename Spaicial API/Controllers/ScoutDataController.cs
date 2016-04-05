@@ -80,6 +80,8 @@ namespace Spaicial_API.Controllers
                 return BadRequest(ModelState);
             }
 
+            ApiKeyAuthentication.CheckApiKey(scoutDataCollector.apiKey, ref db);
+
             int apiKeyId = db.ApiKey.Where(a => a.keyValue == scoutDataCollector.apiKey).First().apiKeyId;
 
             ScoutData scoutData = scoutDataCollector.ConvertToDb(apiKeyId, db);
