@@ -1,12 +1,8 @@
-﻿using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using Spaicial_API.Models;
+﻿using Spaicial_API.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -34,6 +30,16 @@ namespace Spaicial_API.Controllers
             {
                 return NotFound();
             }
+
+            if(zoneToTrain.isPredicted != true)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Zone is not predicted."),
+                    ReasonPhrase = "The zone ID provided is not for a predicted zone. You may want to fetch station data instead."
+                });
+            }
+
             DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
 
             Predictor predictor = new Predictor(zoneToTrain, predictedDataSubject);

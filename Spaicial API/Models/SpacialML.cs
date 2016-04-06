@@ -3,7 +3,10 @@ using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web;
+using System.Web.Http;
 
 namespace Spaicial_API.Models
 {
@@ -262,6 +265,16 @@ namespace Spaicial_API.Models
                 .Where(s => s.locationPoint.Intersects(predictedZone.locationArea));
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
+
+            if (!featureRelationshps.Any())
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Zone has no prediction features for the data subject."),
+                    ReasonPhrase = "The zone ID provided if for a zone with no prediction features for the predicted data subject."
+                });
+            }
+
             //get dateTimes of complete data and take first 100 rows
             var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(1, validScoutData);
 
@@ -278,7 +291,6 @@ namespace Spaicial_API.Models
 
             return trainingDataMatrix;
         }
-
 
         public void GetPrediction()
         {
