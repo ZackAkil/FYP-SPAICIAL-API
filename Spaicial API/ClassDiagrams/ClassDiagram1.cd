@@ -3,7 +3,7 @@
   <Class Name="Spaicial_API.Controllers.TrainController">
     <Position X="3.5" Y="3.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAQBAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAQBAAAAAAAAAEAAAAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>Controllers\TrainController.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -22,7 +22,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.DataCollector">
-    <Position X="6.5" Y="1" Width="2" />
+    <Position X="7" Y="1" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACQAAAAAAQAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
@@ -43,7 +43,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Learning">
-    <Position X="8" Y="6.5" Width="2" />
+    <Position X="7" Y="6" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAAAgAAAIAA=</HashCode>
       <FileName>Models\Learning.cs</FileName>
@@ -65,9 +65,6 @@
   </Class>
   <Class Name="Spaicial_API.Models.SpacialML">
     <Position X="10.75" Y="1" Width="2.75" />
-    <Compartments>
-      <Compartment Name="Private" Collapsed="true" />
-    </Compartments>
     <NestedTypes>
       <Class Name="Spaicial_API.Models.SpacialML.FeatureRelationship" Collapsed="true">
         <TypeIdentifier>
@@ -86,7 +83,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Trainer">
-    <Position X="10.75" Y="6.25" Width="1.5" />
+    <Position X="10" Y="6.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\SpacialML.cs</FileName>

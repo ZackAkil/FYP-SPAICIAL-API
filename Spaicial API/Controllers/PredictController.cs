@@ -28,7 +28,11 @@ namespace Spaicial_API.Controllers
             Zone zoneToTrain = await db.Zone.FindAsync(id);
             if (zoneToTrain == null)
             {
-                return NotFound();
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Zone not found."),
+                    ReasonPhrase = "The zone ID provided does not belong to any zones in the system."
+                });
             }
 
             if(zoneToTrain.isPredicted != true)
