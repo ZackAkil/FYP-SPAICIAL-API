@@ -265,7 +265,7 @@ namespace Spaicial_API.Models
                 .Where(s => s.locationPoint.Intersects(predictedZone.locationArea));
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
-
+             
             if (!featureRelationshps.Any())
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)

@@ -181,7 +181,6 @@
     <Compile Include="Controllers\ScoutDataController.cs" />
     <Compile Include="Controllers\StationDataController.cs" />
     <Compile Include="Controllers\TrainController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
