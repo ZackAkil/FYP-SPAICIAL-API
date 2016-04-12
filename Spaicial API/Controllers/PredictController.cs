@@ -44,7 +44,7 @@ namespace Spaicial_API.Controllers
                 });
             }
 
-            DataSubject predictedDataSubject = db.DataSubject.Where(d => d.label == dataSubject).First();
+            DataSubject predictedDataSubject = DataSubjectFetcher.getDataSubject(dataSubject, ref db);
 
             Predictor predictor = new Predictor(zoneToTrain, predictedDataSubject);
 

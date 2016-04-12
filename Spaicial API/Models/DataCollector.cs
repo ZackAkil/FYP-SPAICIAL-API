@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Data;
 using System.Data.Entity.Spatial;
+using System.Web.Http;
+using System.Net;
+using System.Net.Http;
 
 namespace Spaicial_API.Models
 {
@@ -34,7 +37,7 @@ namespace Spaicial_API.Models
             for (int i = 0; i < dataLables.Length; i++)
             {
                 string lable = dataLables[i];
-                DataSubject dataSubject = db.DataSubject.Where(d => d.label == lable).First();
+                DataSubject dataSubject = DataSubjectFetcher.getDataSubject(lable, ref db);
 
                 ScoutDataPart dataPartToAdd = new ScoutDataPart();
                 dataPartToAdd.dataSubjectId = dataSubject.dataSubjectId;
@@ -62,7 +65,7 @@ namespace Spaicial_API.Models
             for (int i = 0; i < dataLables.Length; i++)
             {
                 string lable = dataLables[i];
-                DataSubject dataSubject = db.DataSubject.Where(d => d.label == lable).First();
+                DataSubject dataSubject = DataSubjectFetcher.getDataSubject(lable,ref db);
 
                 StationDataPart dataPartToAdd = new StationDataPart();
                 dataPartToAdd.dataSubjectId = dataSubject.dataSubjectId;

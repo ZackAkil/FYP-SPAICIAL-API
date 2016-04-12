@@ -193,6 +193,7 @@
     <Compile Include="Models\DataSubject.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DataSubjectFetcher.cs" />
     <Compile Include="Models\Feature.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
