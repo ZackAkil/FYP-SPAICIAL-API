@@ -122,10 +122,5 @@ namespace Spaicial_API.Controllers
             }
             base.Dispose(disposing);
         }
-
-        private bool StationDataExists(int id)
-        {
-            return db.StationData.Count(e => e.stationDataId == id) > 0;
-        }
     }
 }
