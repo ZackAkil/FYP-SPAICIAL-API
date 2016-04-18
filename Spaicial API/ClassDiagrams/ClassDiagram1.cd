@@ -16,27 +16,30 @@
   </Class>
   <Class Name="Spaicial_API.Controllers.ScoutDataController">
     <Position X="1" Y="1" Width="2.25" />
+    <Members>
+      <Method Name="Dispose" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>QAAAAAAAACAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Controllers\ScoutDataController.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.DataCollector">
-    <Position X="7" Y="1" Width="2" />
+    <Position X="7.25" Y="1.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACQAAAAAAQAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.ScoutDataCollector">
-    <Position X="8.5" Y="3.75" Width="1.5" />
+    <Position X="8.5" Y="3.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAQAAAACAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.StationDataCollector">
-    <Position X="6.5" Y="3.75" Width="1.5" />
+    <Position X="6.5" Y="3.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\DataCollector.cs</FileName>

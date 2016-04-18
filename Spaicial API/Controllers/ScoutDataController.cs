@@ -123,9 +123,5 @@ namespace Spaicial_API.Controllers
             base.Dispose(disposing);
         }
 
-        private bool ScoutDataExists(int id)
-        {
-            return db.ScoutData.Count(e => e.scoutDataId == id) > 0;
-        }
     }
 }
