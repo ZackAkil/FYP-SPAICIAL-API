@@ -12,7 +12,7 @@ namespace Spaicial_API.Models
 {
 
 
-    public class SpacialML
+    public class SpaicialML
     {
         protected class FeatureRelationship
         {
@@ -35,7 +35,7 @@ namespace Spaicial_API.Models
         private IQueryable<Feature> featuresToPredict;
         private List<FeatureRelationship> uniqueFeatureRelationships;
 
-        public SpacialML(Zone predictedZone, DataSubject predictedDataSubject)
+        public SpaicialML(Zone predictedZone, DataSubject predictedDataSubject)
         {
             this.predictedZone = predictedZone;
             this.predictedDataSubject = predictedDataSubject;
@@ -234,7 +234,7 @@ namespace Spaicial_API.Models
         }
     }
 
-    public class Trainer :SpacialML
+    public class Trainer :SpaicialML
     {
         public Trainer(Zone predictedZone, DataSubject predictedDataSubject):base(predictedZone, predictedDataSubject)
         {
@@ -247,7 +247,7 @@ namespace Spaicial_API.Models
         }
     }
 
-    public class Predictor : SpacialML
+    public class Predictor : SpaicialML
     {
         public double predictionValue;
         public DateTime predictionAge;

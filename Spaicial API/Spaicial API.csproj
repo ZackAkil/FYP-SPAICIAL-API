@@ -204,7 +204,7 @@
     <Compile Include="Models\ScoutDataPart.cs">
       <DependentUpon>spaicial_db.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\SpacialML.cs" />
+    <Compile Include="Models\SpaicialML.cs" />
     <Compile Include="Models\spaicial_db.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

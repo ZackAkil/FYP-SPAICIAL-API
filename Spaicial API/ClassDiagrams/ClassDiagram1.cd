@@ -8,15 +8,20 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Controllers.StationDataController">
-    <Position X="3.5" Y="1" Width="2" />
+    <Position X="4" Y="1" Width="2" />
+    <Members>
+      <Field Name="db" Hidden="true" />
+      <Method Name="Dispose" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAQAAAAAAIAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAQAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
       <FileName>Controllers\StationDataController.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Controllers.ScoutDataController">
     <Position X="1" Y="1" Width="2.25" />
     <Members>
+      <Field Name="db" Hidden="true" />
       <Method Name="Dispose" Hidden="true" />
     </Members>
     <TypeIdentifier>
@@ -66,37 +71,40 @@
       <FileName>Controllers\PredictController.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Spaicial_API.Models.SpacialML">
-    <Position X="10.75" Y="1" Width="2.75" />
+  <Class Name="Spaicial_API.Models.SpaicialML">
+    <Position X="11.25" Y="0.5" Width="2.75" />
     <NestedTypes>
-      <Class Name="Spaicial_API.Models.SpacialML.FeatureRelationship" Collapsed="true">
+      <Class Name="Spaicial_API.Models.SpaicialML.FeatureRelationship" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>Models\SpacialML.cs</NewMemberFileName>
+          <NewMemberFileName>Models\SpaicialML.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="Spaicial_API.Models.SpacialML.ValidFeatureData" Collapsed="true">
+      <Class Name="Spaicial_API.Models.SpaicialML.ValidFeatureData" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>Models\SpacialML.cs</NewMemberFileName>
+          <NewMemberFileName>Models\SpaicialML.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
       <HashCode>ACAEAAAQAAAQAQCAAAAAYAAAAAIABAAAgAAAAAAAAEA=</HashCode>
-      <FileName>Models\SpacialML.cs</FileName>
+      <FileName>Models\SpaicialML.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Trainer">
-    <Position X="10" Y="6.25" Width="1.5" />
+    <Position X="15.25" Y="3.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\SpacialML.cs</FileName>
+      <FileName>Models\SpaicialML.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Predictor">
-    <Position X="13.25" Y="6.25" Width="1.5" />
+    <Position X="15.25" Y="1" Width="2.25" />
+    <Members>
+      <Method Name="GetTrainingDataMatrix" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAAEAAAIAAAAAAAAAAAAAAAAAAAAAAAQAAAAAEAAAAA=</HashCode>
-      <FileName>Models\SpacialML.cs</FileName>
+      <FileName>Models\SpaicialML.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
