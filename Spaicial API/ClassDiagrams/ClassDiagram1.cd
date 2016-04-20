@@ -53,7 +53,7 @@
   <Class Name="Spaicial_API.Models.Learning">
     <Position X="7" Y="6" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAAAgAAAIAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAgAAAIAg=</HashCode>
       <FileName>Models\Learning.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -72,7 +72,15 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.SpaicialML">
-    <Position X="11.25" Y="0.5" Width="2.75" />
+    <Position X="13.25" Y="0.5" Width="2.75" />
+    <Members>
+      <Field Name="featuresToPredict" Hidden="true" />
+      <Method Name="GetTrainingDataMatrix" Hidden="true" />
+      <Field Name="uniqueFeatureRelationships" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
     <NestedTypes>
       <Class Name="Spaicial_API.Models.SpaicialML.FeatureRelationship" Collapsed="true">
         <TypeIdentifier>
@@ -86,24 +94,24 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>ACAEAAAQAAAQAQCAAAAAYAAAAAIABAAAgAAAAAAAAEA=</HashCode>
+      <HashCode>ACAEAAAQAAAQAQCAAAAAYAAAAAIABABAgAAAgAAAAAA=</HashCode>
       <FileName>Models\SpaicialML.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Trainer">
-    <Position X="15.25" Y="3.25" Width="2.25" />
+    <Position X="11.75" Y="6" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\SpaicialML.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Spaicial_API.Models.Predictor">
-    <Position X="15.25" Y="1" Width="2.25" />
+    <Position X="15.5" Y="6" Width="2.25" />
     <Members>
-      <Method Name="GetTrainingDataMatrix" Hidden="true" />
+      <Method Name="GetPredictionDataMatrix" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>AAAEAAAIAAAAAAAAAAAAAAAAAAAAAAAQAAAAAEAAAAA=</HashCode>
+      <HashCode>AAAAAAAIAAAAAIAAAAAAAAAAAAAAAAAQAAAAAEAAAAA=</HashCode>
       <FileName>Models\SpaicialML.cs</FileName>
     </TypeIdentifier>
   </Class>

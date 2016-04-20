@@ -14,7 +14,7 @@ namespace Spaicial_API.Models
         private static double CostFunction(double[] theta, Matrix<Double> featureValues, Vector<Double> trueValues)
         {
             Vector<Double> temptheta = DenseVector.OfArray(theta);
-            return Distance.MSE(PredictFunction(featureValues, temptheta), trueValues);
+            return Distance.MSE(Predict(featureValues, temptheta), trueValues);
         }
 
 
@@ -24,7 +24,7 @@ namespace Spaicial_API.Models
         /// <param name="featureValues">matrix of feature values</param>
         /// <param name="theta">vector of learnt feature weights </param>
         /// <returns>vectore of predictions</returns>
-        public static Vector<Double> PredictFunction(Matrix<Double> featureValues, Vector<Double> theta)
+        public static Vector<Double> Predict(Matrix<Double> featureValues, Vector<Double> theta)
         {
             return SigmoidFunction(featureValues * theta);
         }
@@ -61,9 +61,9 @@ namespace Spaicial_API.Models
         {
             double[] xInitial = theta;
             double[] xLower = new double[theta.Length];
-            xLower.Populate(-100);
+            xLower.Populate(-300);
             double[] xUpper = new double[theta.Length];
-            xUpper.Populate(100);
+            xUpper.Populate(300);
 
             var solution = NelderMeadSolver.Solve(x => CostFunction(x, featureData, results), xInitial, xLower, xUpper);
 

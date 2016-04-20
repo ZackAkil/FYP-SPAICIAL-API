@@ -12,7 +12,7 @@ namespace Spaicial_API.Models
 {
 
 
-    public class SpaicialML
+    public abstract class SpaicialML
     {
         protected class FeatureRelationship
         {
@@ -104,6 +104,35 @@ namespace Spaicial_API.Models
             return validDatesConcideringScoutData;
         }
 
+        protected IQueryable<DateTime> GetLatestDatesOfCompleteDataIgnoringScoutData(int numOfRows)
+        {
+
+            FeatureRelationship firstRelationship = uniqueFeatureRelationships.First();
+
+            //create query of valid dates that exists across all data relationships,get all data parts that match relationship
+            var validDateTimes = from dataPart in db.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                 select (dataPart.StationData.dateTimeCollected);
+
+            //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
+            foreach (var uniqueRelationship in uniqueFeatureRelationships.Skip(1))
+            {
+                //store current validDateTimes so that i can be used within updating itself
+                IQueryable<DateTime> tempValidDateTimes = validDateTimes;
+                //for the next interation update the list of valid dates with ones that exist in each relationship
+                validDateTimes = from dataPart in db.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                                   && (tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                 select (dataPart.StationData.dateTimeCollected);
+            }
+
+            return validDateTimes;
+        }
+
         protected List<ValidFeatureData> GetFeatureData(IQueryable<DateTime> dateTimesOfCompleteData)
         {
 
@@ -165,7 +194,7 @@ namespace Spaicial_API.Models
             return currentFeatureWeights.ToArray();
         }
 
-        protected Matrix<Double> CreateTrainingDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData, List<ValidFeatureData> validFeatureDataValues)
+        protected Matrix<Double> CreateDataMatrix(IQueryable<DateTime> validDatesConcideringScoutData, List<ValidFeatureData> validFeatureDataValues)
         {
             Matrix<Double> trainingDataMatrix = Matrix<Double>.Build.Dense(validDatesConcideringScoutData.Count(), 1, 1.0);
             //build up each column of the training data set
@@ -201,7 +230,7 @@ namespace Spaicial_API.Models
             //create current feature weights array
             double[] currentFeatureWeights = GetFeatureWeights();
             //create training data matrix
-            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
+            Matrix<Double> trainingDataMatrix = CreateDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
 
             return trainingDataMatrix;
         }
@@ -222,7 +251,7 @@ namespace Spaicial_API.Models
             //create current feature weights array
             double[] currentFeatureWeights = GetFeatureWeights();
             //create training data matrix
-            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
+            Matrix<Double> trainingDataMatrix = CreateDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
@@ -257,12 +286,11 @@ namespace Spaicial_API.Models
 
         }
 
-        private Matrix<Double> GetTrainingDataMatrix()
+
+
+        private Matrix<Double> GetPredictionDataMatrix()
         {
 
-            //get scout data that is in the area of the zone and has the data subject we want to predict
-            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
-                .Where(s => s.locationPoint.Intersects(predictedZone.locationArea));
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
              
@@ -276,28 +304,27 @@ namespace Spaicial_API.Models
             }
 
             //get dateTimes of complete data and take first 100 rows
-            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(1, validScoutData);
+            var validDates = GetLatestDatesOfCompleteDataIgnoringScoutData(1);
 
-            predictionAge = validDatesConcideringScoutData.FirstOrDefault();
+            predictionAge = validDates.FirstOrDefault();
 
             //get list of data per unquie feature relationship 
-            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDatesConcideringScoutData);
-            //get valid scout data to be used as result data
-            double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData);
+            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDates);
+
             //create current feature weights array
             double[] currentFeatureWeights = GetFeatureWeights();
             //create training data matrix
-            Matrix<Double> trainingDataMatrix = CreateTrainingDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
+            Matrix<Double> predictionDataMatrix = CreateDataMatrix(validDates, validFeatureDataValues);
 
-            return trainingDataMatrix;
+            return predictionDataMatrix;
         }
 
         public void GetPrediction()
         {
-            Matrix<Double> featureData = GetTrainingDataMatrix();
+            Matrix<Double> featureData = GetPredictionDataMatrix();
             double[] currentFeatureWeights = GetFeatureWeights();
             Vector<Double> theta = DenseVector.OfArray(currentFeatureWeights);
-            double prediction = (Learning.PredictFunction(featureData, theta))[0];
+            double prediction = (Learning.Predict(featureData, theta))[0];
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
 
             predictionValue = (prediction * predictionScale);
