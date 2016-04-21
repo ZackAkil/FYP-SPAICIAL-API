@@ -11,7 +11,7 @@ namespace Spaicial_API.Models
     public static class Learning
     {
 
-        private static double CostFunction(double[] theta, Matrix<Double> featureValues, Vector<Double> trueValues)
+        public static double CostFunction(double[] theta, Matrix<Double> featureValues, Vector<Double> trueValues)
         {
             Vector<Double> temptheta = DenseVector.OfArray(theta);
             return Distance.MSE(Predict(featureValues, temptheta), trueValues);

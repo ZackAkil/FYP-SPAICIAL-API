@@ -259,7 +259,33 @@ namespace Spaicial_API.Models
             //create array of itial feature values
             double[] intialFeatureWeights = currentFeatureWeights;
             //send to learning method to optimise values of feature weights
-            return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); ;
+            return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); 
+        }
+
+        protected double GetPerformanceOfPredictionModel(int numberOfRowsToUse)
+        {
+            //get scout data that is in the area of the zone and has the data subject we want to predict
+            var validScoutData = db.ScoutData.Where(s => (s.ScoutDataPart.Any(p => p.dataSubjectId == predictedDataSubject.dataSubjectId)))
+                .Where(s => s.locationPoint.Intersects(predictedZone.locationArea));
+            //store unique feature relationships ignoring exponants
+            List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
+            //get dateTimes of complete data and take first 100 rows
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(numberOfRowsToUse, validScoutData);
+            //get list of data per unquie feature relationship 
+            List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDatesConcideringScoutData);
+            //get valid scout data to be used as result data
+            double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData);
+            //create current feature weights array
+            double[] currentFeatureWeights = GetFeatureWeights();
+            //create training data matrix
+            Matrix<Double> trainingDataMatrix = CreateDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
+            //get scale of predicted data
+            double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
+            //create vectore of result data
+            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
+
+            //send to learning method to optimise values of feature weights
+            return Learning.CostFunction(currentFeatureWeights,trainingDataMatrix,trainingResultData);
         }
     }
 
@@ -285,8 +311,6 @@ namespace Spaicial_API.Models
         {
 
         }
-
-
 
         private Matrix<Double> GetPredictionDataMatrix()
         {
@@ -328,6 +352,11 @@ namespace Spaicial_API.Models
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
 
             predictionValue = (prediction * predictionScale);
+        }
+
+        public double GetPerformance(int rowsToUse)
+        {
+            return GetPerformanceOfPredictionModel(rowsToUse);
         }
 
     }

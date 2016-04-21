@@ -174,6 +174,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PerformanceController.cs" />
     <Compile Include="Controllers\PredictController.cs" />
     <Compile Include="Controllers\ScoutDataController.cs" />
     <Compile Include="Controllers\StationDataController.cs" />
