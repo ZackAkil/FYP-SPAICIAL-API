@@ -13,72 +13,19 @@ using Spaicial_API.Models;
 
 namespace Spaicial_API.Controllers
 {
+    /// <summary>
+    /// Responsible for providing a way for scout data sources to submit data into the system
+    /// </summary>
     public class ScoutDataController : ApiController
     {
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
-        //// GET: api/ScoutData
-        //public IQueryable<ScoutData> GetScoutData()
-        //{
-        //    return db.ScoutData;
-        //}
-
-        //// GET: api/ScoutData/5
-        //[ResponseType(typeof(ScoutData))]
-        //public async Task<IHttpActionResult> GetScoutData(int id)
-        //{
-        //    ScoutData scoutData = await db.ScoutData.FindAsync(id);
-        //    if (scoutData == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(scoutData);
-        //}
-
-        // // PUT: api/ScoutData/5
-        //[ResponseType(typeof(void))]
-        //public async Task<IHttpActionResult> PutScoutData(int id, ScoutData scoutData)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //
-        //    if (id != scoutData.scoutDataId)
-        //    {
-        //        return BadRequest();
-        //    }
-        //
-        //    db.Entry(scoutData).State = EntityState.Modified;
-        //
-        //    try
-        //    {
-        //        await db.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ScoutDataExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //
-        //    return StatusCode(HttpStatusCode.NoContent);
-        //}
-
-        // POST: api/ScoutData
-
             /// <summary>
-            /// Parses and submits scout data into data base.
+            /// Parses and submits scout data into teh system
             /// </summary>
-            /// <param name="scoutDataCollector">data conatiner for scout data</param>
+            /// <param name="scoutDataCollector">data container for scout data</param>
             /// <returns>structure of input data if succeful</returns>
-        [ResponseType(typeof(ScoutData))]
+        [ResponseType(typeof(string))]
         public async Task<IHttpActionResult> PostScoutData(ScoutDataCollector scoutDataCollector)
         {
             if (!ModelState.IsValid)
@@ -95,24 +42,8 @@ namespace Spaicial_API.Controllers
             db.ScoutData.Add(scoutData);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = scoutData.scoutDataId }, scoutDataCollector);
+            return Ok("Submission successful");
         }
-
-        //// DELETE: api/ScoutData/5
-        //[ResponseType(typeof(ScoutData))]
-        //public async Task<IHttpActionResult> DeleteScoutData(int id)
-        //{
-        //    ScoutData scoutData = await db.ScoutData.FindAsync(id);
-        //    if (scoutData == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    db.ScoutData.Remove(scoutData);
-        //    await db.SaveChangesAsync();
-
-        //    return Ok(scoutData);
-        //}
 
         protected override void Dispose(bool disposing)
         {

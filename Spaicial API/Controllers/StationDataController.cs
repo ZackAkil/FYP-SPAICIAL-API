@@ -13,66 +13,19 @@ using Spaicial_API.Models;
 
 namespace Spaicial_API.Controllers
 {
+    /// <summary>
+    /// Responsible for providing a way for station data sources to submit data into the system
+    /// </summary>
     public class StationDataController : ApiController
     {
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
-        //// GET: api/StationData
-        //public IQueryable<StationData> GetStationData()
-        //{
-        //    return db.StationData;
-        //}
-
-        //// GET: api/StationData/5
-        //[ResponseType(typeof(StationData))]
-        //public async Task<IHttpActionResult> GetStationData(int id)
-        //{
-        //    StationData stationData = await db.StationData.FindAsync(id);
-        //    if (stationData == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(stationData);
-        //}
-
-        //// PUT: api/StationData/5
-        //[ResponseType(typeof(void))]
-        //public async Task<IHttpActionResult> PutStationData(int id, StationData stationData)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    if (id != stationData.stationDataId)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    db.Entry(stationData).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await db.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!StationDataExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return StatusCode(HttpStatusCode.NoContent);
-        //}
-
-        // POST: api/StationData
-        [ResponseType(typeof(StationData))]
+        /// <summary>
+        /// Parses and submits station data into the system
+        /// </summary>
+        /// <param name="stationDataCollector">data conatiner for station data</param>
+        /// <returns>confirmation string message when complete</returns>
+        [ResponseType(typeof(string))]
         public async Task<IHttpActionResult> PostStationData(StationDataCollector stationDataCollector)
         {
             if (!ModelState.IsValid)
@@ -95,24 +48,9 @@ namespace Spaicial_API.Controllers
             db.StationData.Add(stationData);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = stationData.stationDataId }, stationDataCollector);
+            return Ok("Submission successful");
         }
 
-        //// DELETE: api/StationData/5
-        //[ResponseType(typeof(StationData))]
-        //public async Task<IHttpActionResult> DeleteStationData(int id)
-        //{
-        //    StationData stationData = await db.StationData.FindAsync(id);
-        //    if (stationData == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    db.StationData.Remove(stationData);
-        //    await db.SaveChangesAsync();
-
-        //    return Ok(stationData);
-        //}
 
         protected override void Dispose(bool disposing)
         {

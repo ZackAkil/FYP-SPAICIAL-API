@@ -9,6 +9,9 @@ using System.Web.Http.Description;
 
 namespace Spaicial_API.Controllers
 {
+    /// <summary>
+    /// Responsible for fetching new predictions
+    /// </summary>
     public class PredictController : ApiController
     {
 
@@ -19,6 +22,14 @@ namespace Spaicial_API.Controllers
         }
 
         private spaicial_dbEntities db = new spaicial_dbEntities();
+
+        /// <summary>
+        /// Genrates latest prediction for a specific prediction model
+        /// </summary>
+        /// <param name="id">zoneId of prediction zone</param>
+        /// <param name="dataSubject">label of predicted data subject</param>
+        /// <param name="apiKey">valid API key</param>
+        /// <returns>value of prediction with dateTime of the data used to generate prediction</returns>
         // GET: api/Predict?id=3&dataSubject=wind%20speed&apiKey=abcdefg
         [ResponseType(typeof(PredictionResponse))]
         public async Task<IHttpActionResult> GetPrediction(int id, string dataSubject, string apiKey)

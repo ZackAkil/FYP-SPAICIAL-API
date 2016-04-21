@@ -7,6 +7,9 @@ using System.Web.Http.Description;
 
 namespace Spaicial_API.Controllers
 {
+    /// <summary>
+    /// Responsible for training prediction models
+    /// </summary>
     public class TrainController : ApiController
     {
 

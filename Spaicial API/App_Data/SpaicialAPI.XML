@@ -481,12 +481,63 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:Spaicial_API.Controllers.PerformanceController">
+            <summary>
+            Responsible for fetching the current performance of a prediction model
+            </summary>
+        </member>
+        <member name="M:Spaicial_API.Controllers.PerformanceController.GetPerformanceZonePrediction(System.Int32,System.String,System.Int32,System.String)">
+            <summary>
+            Return the current performance of the prediction model
+            </summary>
+            <param name="id">id of predicted zone</param>
+            <param name="dataSubject">label of predicted data subject</param>
+            <param name="numOfRows">number of previous records to take into account for the performance</param>
+            <param name="apiKey">valid API key</param>
+            <returns>double of the current Mean-squared-error for the prediction model</returns>
+        </member>
+        <member name="T:Spaicial_API.Controllers.PredictController">
+            <summary>
+            Responsible for fetching new predictions
+            </summary>
+        </member>
+        <member name="M:Spaicial_API.Controllers.PredictController.GetPrediction(System.Int32,System.String,System.String)">
+            <summary>
+            Genrates latest prediction for a specific prediction model
+            </summary>
+            <param name="id">zoneId of prediction zone</param>
+            <param name="dataSubject">label of predicted data subject</param>
+            <param name="apiKey">valid API key</param>
+            <returns>value of prediction with dateTime of the data used to generate prediction</returns>
+        </member>
+        <member name="T:Spaicial_API.Controllers.ScoutDataController">
+            <summary>
+            Responsible for providing a way for scout data sources to submit data into the system
+            </summary>
+        </member>
         <member name="M:Spaicial_API.Controllers.ScoutDataController.PostScoutData(Spaicial_API.Models.ScoutDataCollector)">
             <summary>
-            Parses and submits scout data into data base.
+            Parses and submits scout data into teh system
             </summary>
-            <param name="scoutDataCollector">data conatiner for scout data</param>
+            <param name="scoutDataCollector">data container for scout data</param>
             <returns>structure of input data if succeful</returns>
+        </member>
+        <member name="T:Spaicial_API.Controllers.StationDataController">
+            <summary>
+            Responsible for providing a way for station data sources to submit data into the system
+            </summary>
+        </member>
+        <member name="M:Spaicial_API.Controllers.StationDataController.PostStationData(Spaicial_API.Models.StationDataCollector)">
+            <summary>
+            Parses and submits station data into the system
+            </summary>
+            <param name="stationDataCollector">data conatiner for station data</param>
+            <returns>confirmation string message when complete</returns>
+        </member>
+        <member name="T:Spaicial_API.Controllers.TrainController">
+            <summary>
+            Responsible for training prediction models
+            </summary>
         </member>
         <member name="M:Spaicial_API.Controllers.TrainController.GetTrainZone(System.Int32,System.String,System.String)">
             <summary>
@@ -529,7 +580,7 @@
             <param name="zone">zone object</param>
             <param name="db">refference to database object</param>
         </member>
-        <member name="M:Spaicial_API.Models.Learning.PredictFunction(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
+        <member name="M:Spaicial_API.Models.Learning.Predict(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
             <summary>
             Generates logistic regression prediction using linear algebra
             </summary>
