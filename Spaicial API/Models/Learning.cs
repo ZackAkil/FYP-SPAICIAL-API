@@ -39,7 +39,7 @@ namespace Spaicial_API.Models
         /// </summary>
         /// <param name="theta">Current values of theta.</param>
         /// <param name="featureData">values of features.</param>
-        /// <param name="result">List of results based on feature values.</param>
+        /// <param name="results">List of results based on feature values.</param>
         /// <returns>Optimised values of theta</returns>
         public static double[] Learn(double[] theta, double[,]featureData, double[] results)
         {
@@ -55,7 +55,7 @@ namespace Spaicial_API.Models
         /// </summary>
         /// <param name="theta">Current values of theta.</param>
         /// <param name="featureData">values of features.</param>
-        /// <param name="result">List of results based on feature values.</param>
+        /// <param name="results">List of results based on feature values.</param>
         /// <returns>Optimised values of theta</returns>
         public static double[] Learn(double[] theta, Matrix<Double>featureData, Vector<Double> results)
         {

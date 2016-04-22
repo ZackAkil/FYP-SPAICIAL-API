@@ -539,12 +539,14 @@
             Responsible for training prediction models
             </summary>
         </member>
-        <member name="M:Spaicial_API.Controllers.TrainController.GetTrainZone(System.Int32,System.String,System.String)">
+        <member name="M:Spaicial_API.Controllers.TrainController.GetTrainZone(System.Int32,System.String,System.Int32,System.String)">
             <summary>
             Trains the specified zones prediction of the specified data subject
             </summary>
             <param name="id">id of predicted zone to be trained</param>
             <param name="dataSubject">lable of the data subject to be trained</param>
+            <param name="rowsToUse">number of training data rows to use</param>
+            <param name="apiKey">valid API key</param>
             <returns>message if successful</returns>
         </member>
         <member name="M:Spaicial_API.Controllers.TrainController.SaveFeatureValues(System.Double[],Spaicial_API.Models.Bias,System.Linq.IQueryable{Spaicial_API.Models.Feature})">
@@ -594,7 +596,7 @@
             </summary>
             <param name="theta">Current values of theta.</param>
             <param name="featureData">values of features.</param>
-            <param name="result">List of results based on feature values.</param>
+            <param name="results">List of results based on feature values.</param>
             <returns>Optimised values of theta</returns>
         </member>
         <member name="M:Spaicial_API.Models.Learning.Learn(System.Double[],MathNet.Numerics.LinearAlgebra.Matrix{System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
@@ -603,7 +605,7 @@
             </summary>
             <param name="theta">Current values of theta.</param>
             <param name="featureData">values of features.</param>
-            <param name="result">List of results based on feature values.</param>
+            <param name="results">List of results based on feature values.</param>
             <returns>Optimised values of theta</returns>
         </member>
         <member name="T:Spaicial_API.Models.TrainingDataHelpers">

@@ -206,8 +206,8 @@ namespace Spaicial_API.Models
                 //apply feature scalling and exponant values to stored featur data
                 double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
 
-                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, (currentFeatureData.valuesVector
-                                                                                    .Divide(featureScale))
+                trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, ((currentFeatureData.valuesVector - feature.DataSubject.minValue)
+                                                                                    .Divide(featureScale) )
                                                                                     .PointwisePower(feature.expValue));
             }
             return trainingDataMatrix;
@@ -255,7 +255,7 @@ namespace Spaicial_API.Models
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
-            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
+            Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale) ;
             //create array of itial feature values
             double[] intialFeatureWeights = currentFeatureWeights;
             //send to learning method to optimise values of feature weights
@@ -282,7 +282,7 @@ namespace Spaicial_API.Models
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
-            Vector<Double> trainingResultData = DenseVector.OfArray(validScoutDataValues).Divide(predictionScale);
+            Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale) ;
 
             //send to learning method to optimise values of feature weights
             return Learning.CostFunction(currentFeatureWeights,trainingDataMatrix,trainingResultData);
@@ -351,7 +351,7 @@ namespace Spaicial_API.Models
             double prediction = (Learning.Predict(featureData, theta))[0];
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
 
-            predictionValue = (prediction * predictionScale);
+            predictionValue = (prediction * predictionScale) + predictedDataSubject.minValue;
         }
 
         public double GetPerformance(int rowsToUse)

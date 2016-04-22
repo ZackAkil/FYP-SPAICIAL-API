@@ -15,17 +15,19 @@ namespace Spaicial_API.Controllers
 
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
-        private const int trainingRows = 100;
+        //private const int trainingRows = 100;
 
         /// <summary>
         /// Trains the specified zones prediction of the specified data subject
         /// </summary>
         /// <param name="id">id of predicted zone to be trained</param>
         /// <param name="dataSubject">lable of the data subject to be trained</param>
+         /// <param name="rowsToUse">number of training data rows to use</param>
+        /// <param name="apiKey">valid API key</param>
         /// <returns>message if successful</returns>
         // GET: api/Train?id=3&dataSubject=wind%20speed
         [ResponseType(typeof(string))]
-        public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject, string apiKey)
+        public async Task<IHttpActionResult> GetTrainZone(int id, string dataSubject,int rowsToUse, string apiKey)
         {
             ApiKeyAuthentication.CheckApiKey(apiKey, ref db);
 
@@ -39,7 +41,7 @@ namespace Spaicial_API.Controllers
 
             Trainer trainer = new Trainer(zoneToTrain, predictedDataSubject);
 
-            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(trainingRows);
+            double[] newFeatureWeights = trainer.GetTrainedFeatureValues(rowsToUse);
 
             Bias biasToUpdate = db.Bias.Find(zoneToTrain.zoneId, predictedDataSubject.dataSubjectId);
             IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
