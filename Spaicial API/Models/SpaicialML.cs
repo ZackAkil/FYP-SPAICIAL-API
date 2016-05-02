@@ -65,11 +65,10 @@ namespace Spaicial_API.Models
             FeatureRelationship firstRelationship = uniqueFeatureRelationships.First();
 
             //create query of valid dates that exists across all data relationships,get all data parts that match relationship
-            var validDateTimes = from dataPart in db.StationDataPart
-                                                  .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
-                                                   && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
-                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
-                                 select (dataPart.StationData.dateTimeCollected);
+            IQueryable<DateTime> validDateTimes = from dataPart in db.StationDataPart
+            .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
+             && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
+                                                  select (dataPart.StationData.dateTimeCollected);
 
             //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
             foreach (var uniqueRelationship in uniqueFeatureRelationships.Skip(1))
@@ -78,21 +77,18 @@ namespace Spaicial_API.Models
                 IQueryable<DateTime> tempValidDateTimes = validDateTimes;
                 //for the next interation update the list of valid dates with ones that exist in each relationship
                 validDateTimes = from dataPart in db.StationDataPart
-                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
-                                                   && (tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
-                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                 .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                 && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId))
                                  select (dataPart.StationData.dateTimeCollected);
+                //get common dateTimes between feature data
+                validDateTimes = validDateTimes.Intersect(tempValidDateTimes);
             }
 
             //get dateTimes of  station data that matches with scout data and take first 'numOfRows' rows
-            var validDatesConcideringScoutData = from dataPart in validScoutData
-                                                 .Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
-                                                 .OrderByDescending(s => s.dateTimeCollected)
-                                                 .Take(numOfRows)
-                                                 select (dataPart.dateTimeCollected);
+            IQueryable<DateTime> validDatesConcideringScoutData = (from dataPart in validScoutData
+                                                                   select (dataPart.dateTimeCollected)).Intersect(validDateTimes);
 
-            return validDatesConcideringScoutData;
+            return validDatesConcideringScoutData.OrderByDescending(d => d).Take(numOfRows);
         }
 
         protected IQueryable<DateTime> GetLatestDatesOfCompleteDataIgnoringScoutData(int numOfRows)
@@ -104,7 +100,6 @@ namespace Spaicial_API.Models
             var validDateTimes = from dataPart in db.StationDataPart
                                                   .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
                                                    && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
-                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
                                  select (dataPart.StationData.dateTimeCollected);
 
             //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
@@ -114,14 +109,14 @@ namespace Spaicial_API.Models
                 IQueryable<DateTime> tempValidDateTimes = validDateTimes;
                 //for the next interation update the list of valid dates with ones that exist in each relationship
                 validDateTimes = from dataPart in db.StationDataPart
-                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
-                                                   && (tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
-                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                 .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                 && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId))
                                  select (dataPart.StationData.dateTimeCollected);
+                //get common dateTimes between feature data
+                validDateTimes = validDateTimes.Intersect(tempValidDateTimes);
             }
 
-            return validDateTimes;
+            return validDateTimes.OrderByDescending(d => d).Take(numOfRows);
         }
 
         protected List<ValidFeatureData> GetFeatureData(IQueryable<DateTime> dateTimesOfCompleteData)
