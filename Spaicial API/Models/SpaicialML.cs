@@ -162,16 +162,25 @@ namespace Spaicial_API.Models
 
         public double[] GetFeatureWeights()
         {
-            //impliment check for bias and feature existing
 
             //create current feature weights array
             List<double> currentFeatureWeights = new List<double>();
             //add bias
-            currentFeatureWeights.Add(db.Bias.Find(predictedZone.zoneId, predictedDataSubject.dataSubjectId).multiValue);
+            Bias bias = db.Bias.Find(predictedZone.zoneId, predictedDataSubject.dataSubjectId);
 
-            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
-                                                                       && (f.predictedZoneId == predictedZone.zoneId));
-            foreach (var feature in featuresToTrain)
+            if (bias == null){
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Zone has no prediction bias for the data subject."),
+                    ReasonPhrase = "The zone ID provided if for a zone with no prediction bias for the predicted data subject."
+                });
+            }
+
+            currentFeatureWeights.Add(bias.multiValue);
+
+            //IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
+            //                                                           && (f.predictedZoneId == predictedZone.zoneId));
+            foreach (var feature in featuresToPredict)
             {
                 //add current feature weight values
                 currentFeatureWeights.Add(feature.multiValue);
