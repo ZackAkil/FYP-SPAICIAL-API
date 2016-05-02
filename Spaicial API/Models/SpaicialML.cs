@@ -49,23 +49,14 @@ namespace Spaicial_API.Models
         protected List<FeatureRelationship> GetUniqueFeatureRelationships()
         {
 
-            List<FeatureRelationship> uniqueFeatureRelationshps = new List<FeatureRelationship>();
+            List<FeatureRelationship> uniqueFeatureRelationships = featuresToPredict
+                  .GroupBy(f => new { f.sourceZoneId, f.sourceDataSubjectId })
+                  .Select(g => new FeatureRelationship{
+                    sourceZoneId = g.FirstOrDefault().sourceZoneId,
+                    sourceDataSubjectId = g.FirstOrDefault().sourceDataSubjectId
+                  }).ToList();
 
-            foreach (var feature in featuresToPredict)
-            {
-                FeatureRelationship featureCheck = new FeatureRelationship
-                {
-                    sourceZoneId = feature.sourceZoneId,
-                    sourceDataSubjectId = feature.sourceDataSubjectId
-                };
-
-                if (!uniqueFeatureRelationshps.Any(f => (f.sourceZoneId == featureCheck.sourceZoneId) &&
-                (f.sourceDataSubjectId == featureCheck.sourceDataSubjectId)))
-                {
-                    uniqueFeatureRelationshps.Add(featureCheck);
-                }
-            }
-            return uniqueFeatureRelationshps;
+            return uniqueFeatureRelationships;
         }
 
         protected IQueryable<DateTime> GetLatestDatesOfCompleteData(int numOfRows, IQueryable<ScoutData> validScoutData)
@@ -257,6 +248,7 @@ namespace Spaicial_API.Models
             //create vectore of result data
             Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale) ;
             //create array of itial feature values
+            Console.WriteLine(trainingResultData.ToString());
             double[] intialFeatureWeights = currentFeatureWeights;
             //send to learning method to optimise values of feature weights
             return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); 

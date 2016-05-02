@@ -28,6 +28,7 @@ namespace Spaicial_API.Models
         public string label { get; set; }
         public double minValue { get; set; }
         public double maxValue { get; set; }
+        public string unit { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Bias> Bias { get; set; }

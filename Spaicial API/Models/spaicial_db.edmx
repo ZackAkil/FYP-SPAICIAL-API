@@ -29,6 +29,7 @@
           <Property Name="label" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="minValue" Type="float" Nullable="false" />
           <Property Name="maxValue" Type="float" Nullable="false" />
+          <Property Name="unit" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Feature">
           <Key>
@@ -363,6 +364,7 @@
           <NavigationProperty Name="Feature1" Relationship="Self.FKFeature987439" FromRole="DataSubject" ToRole="Feature" />
           <NavigationProperty Name="ScoutDataPart" Relationship="Self.FKScoutDataP852470" FromRole="DataSubject" ToRole="ScoutDataPart" />
           <NavigationProperty Name="StationDataPart" Relationship="Self.FKStationDat787759" FromRole="DataSubject" ToRole="StationDataPart" />
+          <Property Name="unit" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Feature">
           <Key>
@@ -703,6 +705,7 @@
           <EntitySetMapping Name="DataSubject">
             <EntityTypeMapping TypeName="spaicial_dbModel.DataSubject">
               <MappingFragment StoreEntitySet="DataSubject">
+                <ScalarProperty Name="unit" ColumnName="unit" />
                 <ScalarProperty Name="dataSubjectId" ColumnName="dataSubjectId" />
                 <ScalarProperty Name="label" ColumnName="label" />
                 <ScalarProperty Name="minValue" ColumnName="minValue" />
