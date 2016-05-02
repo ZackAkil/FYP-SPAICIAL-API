@@ -134,12 +134,11 @@ namespace Spaicial_API.Models
                 };
 
                 //fill objects list feild with data from valid dateTimes
-                fetchedValidData.values = (from value in db.StationDataPart
+                fetchedValidData.values = (from v in db.StationDataPart
                                            .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
-                                            && (dateTimesOfCompleteData.Any(v => v == s.StationData.dateTimeCollected)))
-                                            .OrderByDescending(s => s.StationData.dateTimeCollected)
-                                           select value.dataValue).ToList();
+                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId))
+                                           join d in dateTimesOfCompleteData on v.StationData.dateTimeCollected equals d
+                                           select v.dataValue).ToList();
 
                 fetchedValidData.valuesVector = DenseVector.OfArray(fetchedValidData.values.ToArray());
                 //add object to list obeject
