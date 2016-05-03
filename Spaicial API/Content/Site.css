@@ -1,6 +1,8 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+        margin: 0;
+    background-color: rgb(222,222,222);
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -14,4 +16,16 @@ input,
 select,
 textarea {
     max-width: 280px;
+}
+
+
+.vertical-center {
+    min-height: 100%; /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh; /* These two lines are counted as one :-)       */
+    display: flex;
+    align-items: center;
+}
+
+#section {
+    height: 100vh;
 }
