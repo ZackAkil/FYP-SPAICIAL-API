@@ -239,9 +239,9 @@
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\grid_bg.png" />
     <Content Include="Content\images\spaicial_logo.png" />
-    <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Models\spaicial_db.Context.tt">

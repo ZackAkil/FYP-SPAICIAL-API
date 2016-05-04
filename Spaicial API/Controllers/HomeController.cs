@@ -10,7 +10,7 @@ namespace Spaicial_API.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "Home Page";
+            ViewBag.Title = "SPAiCIAL - About";
 
             return View();
         }
