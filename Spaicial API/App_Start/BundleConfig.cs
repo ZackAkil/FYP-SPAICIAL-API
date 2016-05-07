@@ -18,11 +18,21 @@ namespace Spaicial_API
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+                      "~/Scripts/jquery.easing.min.js",
+                      "~/Scripts/jquery.fittext.js",
+                      "~/Scripts/respond.js",
+                      "~/Scripts/wow.min.js",
+                      "~/Scripts/creative.js"
+                      ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css",
+                      "~/Content/font-awesome.min.css",
+                      "~/Content/animate.min.css",
+                      "~/Content/creative.css",
+                      "~/Content/cust-font.css",
+                      "~/Content/cust-font2.css"));
         }
     }
 }

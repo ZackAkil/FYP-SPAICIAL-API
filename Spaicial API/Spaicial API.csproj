@@ -237,8 +237,13 @@
   <ItemGroup>
     <Content Include="App_Data\SpaicialAPI.XML" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Content\animate.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\creative.css" />
+    <Content Include="Content\cust-font.css" />
+    <Content Include="Content\cust-font2.css" />
+    <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\grid_bg.png" />
     <Content Include="Content\images\spaicial_logo.png" />
@@ -275,6 +280,10 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="Scripts\creative.js" />
+    <Content Include="Scripts\jquery.easing.min.js" />
+    <Content Include="Scripts\jquery.fittext.js" />
+    <Content Include="Scripts\wow.min.js" />
     <Content Include="Web.config" />
     <Content Include="ClassDiagrams\ClassDiagram1.cd" />
     <Content Include="Views\Shared\_Layout - home.cshtml" />
