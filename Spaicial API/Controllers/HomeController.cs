@@ -10,7 +10,7 @@ namespace Spaicial_API.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "SPAiCIAL - About";
+            ViewBag.Title = "SPAiCIAL - Prediction API";
 
             return View();
         }

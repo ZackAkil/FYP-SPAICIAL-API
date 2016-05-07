@@ -27,12 +27,13 @@ namespace Spaicial_API
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css",
+                      //"~/Content/site.css",
+                      "~/Content/cust-font.css",
+                      "~/Content/cust-font2.css",
                       "~/Content/font-awesome.min.css",
                       "~/Content/animate.min.css",
-                      "~/Content/creative.css",
-                      "~/Content/cust-font.css",
-                      "~/Content/cust-font2.css"));
+                      "~/Content/creative.css"
+                      ));
         }
     }
 }

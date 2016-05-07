@@ -2,15 +2,182 @@
     Layout = "~/Views/Shared/_Layout - home.cshtml";
 }
 
-<div class="section" style="    background: url(/Content/images/grid_bg.png);    background-size: 100% 100%;background-repeat: no-repeat;">
-    <div class="container vertical-center">
-        <div class="row">
-            <div class="span4"></div>
-            <div class="span4">
-                <img class="center-block wow fadeIn" style="width: 100%;" src="~/Content/images/spaicial_logo.png" />
-                <h1 style="text-align:center;">Prediction API for spatially related data.</h1>
-            </div>
-            <div class="span4"></div>
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand page-scroll" href="#page-top">SPAiCIAl</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href="#about">What</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="#services">Features</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="#how-to-use">Use Case</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="#extra-info">Extra Info</a>
+                </li>
+                <li>
+                    <a href="http://spaicial.com/Help">API Documentation</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<header>
+    <div class="header-content">
+        <div class="header-content-inner">
+            <img src="~/Content/images/spaicial_logo.png" style="    width: 100%;">
+            <p>Prediction API for spatially related data</p>
+            <a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
         </div>
     </div>
-</div>
+</header>
+
+<section class="bg-primary" id="about">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <h2 class="section-heading">What is it?</h2>
+                <hr class="light">
+                <p class="text-faded">SPAiCIAL is a RESTful API that facilitates the building and maintaining of large collections of machine learning models used for predicting variables of spatial zones. </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-heading">Features</h2>
+                <hr class="primary">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="service-box">
+                    <i class="fa fa-4x fa-exchange wow bounceIn text-primary"></i>
+                    <h3>Easy-to-use API commands</h3>
+                    <p class="text-muted">Uploading data and getting predictions from the system is simple using the API and its straight forward documentation.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="service-box">
+                    <i class="fa fa-4x fa-cog wow bounceIn text-primary" data-wow-delay=".1s"></i>
+                    <h3>Configurable prediction models</h3>
+                    <p class="text-muted">As the predicted environment changes, so to can the models stored in the system for accurate predictions.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="service-box">
+                    <i class="fa fa-4x fa-sort-amount-desc wow bounceIn text-primary" data-wow-delay=".2s"></i>
+                    <h3>Automatic data cleaning</h3>
+                    <p class="text-muted">When models are trained, a set of clever processes gather and clean the latest data required for the model.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="service-box">
+                    <i class="fa fa-4x fa-line-chart wow bounceIn text-primary" data-wow-delay=".3s"></i>
+                    <h3>Robust logistic regression</h3>
+                    <p class="text-muted">At its heart the API uses this tried and true machine learning technique for building its prediction models.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<aside class="bg-dark">
+    <div class="container text-center">
+        <div class="call-to-action">
+            <h2>View the API documentation to see all of the APIs functions</h2>
+            <a target="_blank" href="http://spaicial.com/Help" class="btn btn-default btn-xl wow tada">API Documentation</a>
+        </div>
+    </div>
+</aside>
+
+<section id="how-to-use">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <h2 class="section-heading">Use Case</h2>
+                <hr class="primary">
+                <p>The original use case that SPAiCAIL was designed for was predicting urban wind conditions throughout a large dense city like London.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <h3>1. Configure system</h3>
+                <p class="text-muted">Start by geographically defining the areas that will be tracked by the system e.g areas that will be predicted (predicted zones) and the areas that will constantly be submitting data (station zones). Once these zones are defined, the correlative links between the predicted and station zones can be configured. Then by using the API <a href="http://spaicial.com/Help/Api/GET-api-Train-id_dataSubject_rowsToUse_apiKey">Train method</a> and a web request scheduler, the re-training of models can be automated.</p>
+            </div>
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <h3>2. Collect data</h3>
+                <p class="text-muted">Station zones can submit their data values into the system using the API <a href="http://spaicial.com/Help/Api/POST-api-StationData">Station Data method</a>. Crucially a mobile data collector will need to be used to collect data from the predicted zones using the API <a href="http://spaicial.com/Help/Api/POST-api-ScoutData">Scout Data method</a>. For task of urban wind prediction a drone can be used as a Scout data collector. </p>
+            </div>
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <h3>3. Get predictions</h3>
+                <p class="text-muted">Finally, provided the station zones continue to upload new data into the system, real time predictions can be fetched using the API <a href="http://spaicial.com/Help/Api/GET-api-Predict-id_dataSubject_apiKey">Predict method</a>. If the environment changes, provided new scout data continues to be collected and the models continue to be re-trained, the model will automatically adapt and the predictions will maintain their accuracy.</p>
+            </div>
+        </div>
+
+
+
+    </div>
+    <div class="container">
+        <div class="row no-gutter">
+            <div class="col-lg-6 col-sm-6">
+                <h3 style="text-align: center;">Models</h3>
+                <span class="portfolio-box">
+                    <img src="~/Content/images/map_nodes.png" class="img-responsive wow fadeIn" alt="">
+                </span>
+            </div>
+            <div class="col-lg-6 col-sm-6">
+                <h3 style="text-align: center;">Predictions</h3>
+                <span class="portfolio-box">
+                    <img src="~/Content/images/map_arrows.png" class="img-responsive wow fadeIn" alt="">
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="extra-info" style="    background-color: whitesmoke;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <h2 class="section-heading">Extra Info</h2>
+                <hr class="primary">
+                <p>The API was built using <a target="_blank" href="http://www.asp.net/web-api">ASP.NET MVC API 2</a> framework with <a target="_blank" href="https://www.microsoft.com/en-us/server-cloud/products/sql-server/">Microsoft SQL Server</a> as the database platform. <a target="_blank" href="https://msdn.microsoft.com/en-us/library/ff524509(v=vs.93).aspx">Microsoft Solver Foundation</a> is used for non-linear optimisation within the logistic regression with <a target="_blank" href="http://numerics.mathdotnet.com/">Math.NET Numerics</a> being used for the vectorised maths.</p>
+                <p>Design and development of the system was conducted by Zack Akil as the final year project of his Bsc (Hons) Computer Science degree with the University of Plymouth.</p>
+            </div>
+            <div class="col-lg-3 col-lg-offset-3 text-center">
+
+                <p><a target="_blank" href="https://uk.linkedin.com/in/zackakil"><i class="fa fa-linkedin-square fa-5x wow bounceIn"></i></a></p>
+            </div>
+            <div class="col-lg-3 text-center">
+                <p><a target="_blank" href="https://github.com/ZackAkil"><i class="fa fa-github-square fa-5x wow bounceIn" data-wow-delay=".1s"></i></a></p>
+            </div>
+
+
+        </div>
+    </div>
+</section>

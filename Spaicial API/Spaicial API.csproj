@@ -246,7 +246,10 @@
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\images\favicon.png" />
     <Content Include="Content\images\grid_bg.png" />
+    <Content Include="Content\images\map_arrows.png" />
+    <Content Include="Content\images\map_nodes.png" />
     <Content Include="Content\images\spaicial_logo.png" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Models\spaicial_db.Context.tt">
@@ -287,6 +290,11 @@
     <Content Include="Web.config" />
     <Content Include="ClassDiagrams\ClassDiagram1.cd" />
     <Content Include="Views\Shared\_Layout - home.cshtml" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\FontAwesome.otf" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

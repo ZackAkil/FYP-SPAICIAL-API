@@ -178,7 +178,7 @@ header {
     min-height: auto;
     text-align: center;
     color: #fff;
-    background-image: url(../img/grid_bg.png);
+    background-image: url(/Content/images/grid_bg.png);
     background-position: center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
