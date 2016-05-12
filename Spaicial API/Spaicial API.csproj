@@ -248,7 +248,11 @@
     <Content Include="Content\images\grid_bg.png" />
     <Content Include="Content\images\map_arrows.png" />
     <Content Include="Content\images\map_nodes.png" />
+    <Content Include="Content\images\predict arrow.png" />
+    <Content Include="Content\images\predict node.png" />
     <Content Include="Content\images\spaicial_logo.png" />
+    <Content Include="Content\images\station arrow.png" />
+    <Content Include="Content\images\station node.png" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
