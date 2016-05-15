@@ -15,12 +15,6 @@ namespace Spaicial_API.Controllers
     public class PredictController : ApiController
     {
 
-        private class PredictionResponse
-        {
-            public double value;
-            public DateTime latestDataUsed;
-        }
-
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
         /// <summary>

@@ -653,6 +653,16 @@
             <param name="results">List of results based on feature values.</param>
             <returns>Optimised values of theta</returns>
         </member>
+        <member name="F:Spaicial_API.Models.PredictionResponse.value">
+            <summary>
+            value of prediction
+            </summary>
+        </member>
+        <member name="F:Spaicial_API.Models.PredictionResponse.latestDataUsed">
+            <summary>
+            dateTime that the data used to generate prediction was collected
+            </summary>
+        </member>
         <member name="T:Spaicial_API.Models.TrainingDataHelpers">
             <summary>
             Class with static helper methods for fetching, cleaning training data and executing the feature weight optimisation
