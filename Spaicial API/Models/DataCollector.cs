@@ -12,16 +12,37 @@ namespace Spaicial_API.Models
 {
     public abstract class DataCollector
     {
+        /// <summary>
+        /// datTime that the data was collected at
+        /// </summary>
         public DateTime dateTimeCollected { get; set; }
+        /// <summary>
+        /// valid api key
+        /// </summary>
         public string apiKey { get; set; }
+        /// <summary>
+        /// array of labels that correspond to the feature labels of the data being submitted
+        /// </summary>
         public string[] dataLables { get; set; }
+        /// <summary>
+        /// array of data value that correspond to the feature labels of the data being submitted
+        /// </summary>
         public string[] dataValues { get; set; }
 
     }
 
+    /// <summary>
+    /// Container for scout data
+    /// </summary>
     public class ScoutDataCollector : DataCollector
     {
+        /// <summary>
+        /// longitude of location that the data was collected at
+        /// </summary>
         public double longitude { get; set; }
+        /// <summary>
+        /// latitude of location that the data was collected at
+        /// </summary>
         public double latitude { get; set; }
 
         public ScoutData ConvertToDb(int confirmedApiKeyId, spaicial_dbEntities db)
@@ -50,8 +71,14 @@ namespace Spaicial_API.Models
         }
     }
 
+    /// <summary>
+    /// Container for station data
+    /// </summary>
     public class StationDataCollector : DataCollector
     {
+        /// <summary>
+        /// id of station zone
+        /// </summary>
         public int zoneId { get; set; }
 
         public StationData ConvertToDb(int confirmedApiKeyId, spaicial_dbEntities db)

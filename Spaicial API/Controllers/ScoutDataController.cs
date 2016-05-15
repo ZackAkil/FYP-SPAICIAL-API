@@ -21,10 +21,10 @@ namespace Spaicial_API.Controllers
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
             /// <summary>
-            /// Parses and submits scout data into teh system
+            /// Parses and submits scout data into the system
             /// </summary>
             /// <param name="scoutDataCollector">data container for scout data</param>
-            /// <returns>structure of input data if succeful</returns>
+            /// <returns>confirmation message if successful</returns>
         [ResponseType(typeof(string))]
         public async Task<IHttpActionResult> PostScoutData(ScoutDataCollector scoutDataCollector)
         {

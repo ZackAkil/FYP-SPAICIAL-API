@@ -488,7 +488,7 @@
         </member>
         <member name="M:Spaicial_API.Controllers.PerformanceController.GetPerformanceZonePrediction(System.Int32,System.String,System.Int32,System.String)">
             <summary>
-            Return the current performance of the prediction model
+            Returns the current performance of the prediction model
             </summary>
             <param name="id">id of predicted zone</param>
             <param name="dataSubject">label of predicted data subject</param>
@@ -503,7 +503,7 @@
         </member>
         <member name="M:Spaicial_API.Controllers.PredictController.GetPrediction(System.Int32,System.String,System.String)">
             <summary>
-            Genrates latest prediction for a specific prediction model
+            Generates latest prediction for a specific prediction model
             </summary>
             <param name="id">zoneId of prediction zone</param>
             <param name="dataSubject">label of predicted data subject</param>
@@ -517,10 +517,10 @@
         </member>
         <member name="M:Spaicial_API.Controllers.ScoutDataController.PostScoutData(Spaicial_API.Models.ScoutDataCollector)">
             <summary>
-            Parses and submits scout data into teh system
+            Parses and submits scout data into the system
             </summary>
             <param name="scoutDataCollector">data container for scout data</param>
-            <returns>structure of input data if succeful</returns>
+            <returns>confirmation message if successful</returns>
         </member>
         <member name="T:Spaicial_API.Controllers.StationDataController">
             <summary>
@@ -581,6 +581,51 @@
             <param name="apiKey">api key value stringe</param>
             <param name="zone">zone object</param>
             <param name="db">refference to database object</param>
+        </member>
+        <member name="P:Spaicial_API.Models.DataCollector.dateTimeCollected">
+            <summary>
+            datTime that the data was collected at
+            </summary>
+        </member>
+        <member name="P:Spaicial_API.Models.DataCollector.apiKey">
+            <summary>
+            valid api key
+            </summary>
+        </member>
+        <member name="P:Spaicial_API.Models.DataCollector.dataLables">
+            <summary>
+            array of labels that correspond to the feature labels of the data being submitted
+            </summary>
+        </member>
+        <member name="P:Spaicial_API.Models.DataCollector.dataValues">
+            <summary>
+            array of data value that correspond to the feature labels of the data being submitted
+            </summary>
+        </member>
+        <member name="T:Spaicial_API.Models.ScoutDataCollector">
+            <summary>
+            Container for scout data
+            </summary>
+        </member>
+        <member name="P:Spaicial_API.Models.ScoutDataCollector.longitude">
+            <summary>
+            longitude of location that the data was collected at
+            </summary>
+        </member>
+        <member name="P:Spaicial_API.Models.ScoutDataCollector.latitude">
+            <summary>
+            latitude of location that the data was collected at
+            </summary>
+        </member>
+        <member name="T:Spaicial_API.Models.StationDataCollector">
+            <summary>
+            Container for station data
+            </summary>
+        </member>
+        <member name="P:Spaicial_API.Models.StationDataCollector.zoneId">
+            <summary>
+            id of station zone
+            </summary>
         </member>
         <member name="M:Spaicial_API.Models.Learning.Predict(MathNet.Numerics.LinearAlgebra.Matrix{System.Double},MathNet.Numerics.LinearAlgebra.Vector{System.Double})">
             <summary>

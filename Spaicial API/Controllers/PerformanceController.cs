@@ -18,7 +18,7 @@ namespace Spaicial_API.Controllers
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
         /// <summary>
-        /// Return the current performance of the prediction model
+        /// Returns the current performance of the prediction model
         /// </summary>
         /// <param name="id">id of predicted zone</param>
         /// <param name="dataSubject">label of predicted data subject</param>

@@ -24,7 +24,7 @@ namespace Spaicial_API.Controllers
         private spaicial_dbEntities db = new spaicial_dbEntities();
 
         /// <summary>
-        /// Genrates latest prediction for a specific prediction model
+        /// Generates latest prediction for a specific prediction model
         /// </summary>
         /// <param name="id">zoneId of prediction zone</param>
         /// <param name="dataSubject">label of predicted data subject</param>
