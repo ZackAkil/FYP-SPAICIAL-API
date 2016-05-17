@@ -49,14 +49,23 @@ namespace Spaicial_API.Models
         protected List<FeatureRelationship> GetUniqueFeatureRelationships()
         {
 
-            List<FeatureRelationship> uniqueFeatureRelationships = featuresToPredict
-                  .GroupBy(f => new { f.sourceZoneId, f.sourceDataSubjectId })
-                  .Select(g => new FeatureRelationship{
-                    sourceZoneId = g.FirstOrDefault().sourceZoneId,
-                    sourceDataSubjectId = g.FirstOrDefault().sourceDataSubjectId
-                  }).ToList();
+            List<FeatureRelationship> uniqueFeatureRelationshps = new List<FeatureRelationship>();
 
-            return uniqueFeatureRelationships;
+            foreach (var feature in featuresToPredict)
+            {
+                FeatureRelationship featureCheck = new FeatureRelationship
+                {
+                    sourceZoneId = feature.sourceZoneId,
+                    sourceDataSubjectId = feature.sourceDataSubjectId
+                };
+
+                if (!uniqueFeatureRelationshps.Any(f => (f.sourceZoneId == featureCheck.sourceZoneId) &&
+                (f.sourceDataSubjectId == featureCheck.sourceDataSubjectId)))
+                {
+                    uniqueFeatureRelationshps.Add(featureCheck);
+                }
+            }
+            return uniqueFeatureRelationshps;
         }
 
         protected IQueryable<DateTime> GetLatestDatesOfCompleteData(int numOfRows, IQueryable<ScoutData> validScoutData)
@@ -65,10 +74,11 @@ namespace Spaicial_API.Models
             FeatureRelationship firstRelationship = uniqueFeatureRelationships.First();
 
             //create query of valid dates that exists across all data relationships,get all data parts that match relationship
-            IQueryable<DateTime> validDateTimes = from dataPart in db.StationDataPart
-            .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
-             && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
-                                                  select (dataPart.StationData.dateTimeCollected);
+            var validDateTimes = from dataPart in db.StationDataPart
+                                                  .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                 select (dataPart.StationData.dateTimeCollected);
 
             //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
             foreach (var uniqueRelationship in uniqueFeatureRelationships.Skip(1))
@@ -77,18 +87,21 @@ namespace Spaicial_API.Models
                 IQueryable<DateTime> tempValidDateTimes = validDateTimes;
                 //for the next interation update the list of valid dates with ones that exist in each relationship
                 validDateTimes = from dataPart in db.StationDataPart
-                 .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                 && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId))
+                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                                   && (tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
                                  select (dataPart.StationData.dateTimeCollected);
-                //get common dateTimes between feature data
-                validDateTimes = validDateTimes.Intersect(tempValidDateTimes);
             }
 
             //get dateTimes of  station data that matches with scout data and take first 'numOfRows' rows
-            IQueryable<DateTime> validDatesConcideringScoutData = (from dataPart in validScoutData
-                                                                   select (dataPart.dateTimeCollected)).Intersect(validDateTimes);
+            var validDatesConcideringScoutData = from dataPart in validScoutData
+                                                 .Where(s => (validDateTimes.Any(v => v == s.dateTimeCollected)))
+                                                 .OrderByDescending(s => s.dateTimeCollected)
+                                                 .Take(numOfRows)
+                                                 select (dataPart.dateTimeCollected);
 
-            return validDatesConcideringScoutData.OrderByDescending(d => d).Take(numOfRows);
+            return validDatesConcideringScoutData;
         }
 
         protected IQueryable<DateTime> GetLatestDatesOfCompleteDataIgnoringScoutData(int numOfRows)
@@ -100,6 +113,7 @@ namespace Spaicial_API.Models
             var validDateTimes = from dataPart in db.StationDataPart
                                                   .Where(s => (s.StationData.zoneId == firstRelationship.sourceZoneId)
                                                    && (s.dataSubjectId == firstRelationship.sourceDataSubjectId))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
                                  select (dataPart.StationData.dateTimeCollected);
 
             //foreach unique relationship collect data which exists in the stationData foreach  reationship with the same dateTimeCollected feild
@@ -109,14 +123,14 @@ namespace Spaicial_API.Models
                 IQueryable<DateTime> tempValidDateTimes = validDateTimes;
                 //for the next interation update the list of valid dates with ones that exist in each relationship
                 validDateTimes = from dataPart in db.StationDataPart
-                 .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                 && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId))
+                                                  .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
+                                                   && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                                   && (tempValidDateTimes.Any(v => v == s.StationData.dateTimeCollected)))
+                                                   .OrderByDescending(s => s.StationData.dateTimeCollected)
                                  select (dataPart.StationData.dateTimeCollected);
-                //get common dateTimes between feature data
-                validDateTimes = validDateTimes.Intersect(tempValidDateTimes);
             }
 
-            return validDateTimes.OrderByDescending(d => d).Take(numOfRows);
+            return validDateTimes;
         }
 
         protected List<ValidFeatureData> GetFeatureData(IQueryable<DateTime> dateTimesOfCompleteData)
@@ -134,11 +148,12 @@ namespace Spaicial_API.Models
                 };
 
                 //fill objects list feild with data from valid dateTimes
-                fetchedValidData.values = (from v in db.StationDataPart
+                fetchedValidData.values = (from value in db.StationDataPart
                                            .Where(s => (s.StationData.zoneId == uniqueRelationship.sourceZoneId)
-                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId))
-                                           join d in dateTimesOfCompleteData on v.StationData.dateTimeCollected equals d
-                                           select v.dataValue).ToList();
+                                            && (s.dataSubjectId == uniqueRelationship.sourceDataSubjectId)
+                                            && (dateTimesOfCompleteData.Any(v => v == s.StationData.dateTimeCollected)))
+                                            .OrderByDescending(s => s.StationData.dateTimeCollected)
+                                           select value.dataValue).ToList();
 
                 fetchedValidData.valuesVector = DenseVector.OfArray(fetchedValidData.values.ToArray());
                 //add object to list obeject
@@ -161,25 +176,16 @@ namespace Spaicial_API.Models
 
         public double[] GetFeatureWeights()
         {
+            //impliment check for bias and feature existing
 
             //create current feature weights array
             List<double> currentFeatureWeights = new List<double>();
             //add bias
-            Bias bias = db.Bias.Find(predictedZone.zoneId, predictedDataSubject.dataSubjectId);
+            currentFeatureWeights.Add(db.Bias.Find(predictedZone.zoneId, predictedDataSubject.dataSubjectId).multiValue);
 
-            if (bias == null){
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Zone has no prediction bias for the data subject."),
-                    ReasonPhrase = "The zone ID provided if for a zone with no prediction bias for the predicted data subject."
-                });
-            }
-
-            currentFeatureWeights.Add(bias.multiValue);
-
-            //IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
-            //                                                           && (f.predictedZoneId == predictedZone.zoneId));
-            foreach (var feature in featuresToPredict)
+            IQueryable<Feature> featuresToTrain = db.Feature.Where(f => (f.predictedDataSubjectId == predictedDataSubject.dataSubjectId)
+                                                                       && (f.predictedZoneId == predictedZone.zoneId));
+            foreach (var feature in featuresToTrain)
             {
                 //add current feature weight values
                 currentFeatureWeights.Add(feature.multiValue);
@@ -201,7 +207,7 @@ namespace Spaicial_API.Models
                 double featureScale = feature.DataSubject.maxValue - feature.DataSubject.minValue;
 
                 trainingDataMatrix = trainingDataMatrix.InsertColumn(trainingDataMatrix.ColumnCount, ((currentFeatureData.valuesVector - feature.DataSubject.minValue)
-                                                                                    .Divide(featureScale) )
+                                                                                    .Divide(featureScale))
                                                                                     .PointwisePower(feature.expValue));
             }
             return trainingDataMatrix;
@@ -216,7 +222,7 @@ namespace Spaicial_API.Models
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
             //get dateTimes of complete data and take first 100 rows
-            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(rowsToGet,validScoutData);
+            var validDatesConcideringScoutData = GetLatestDatesOfCompleteData(rowsToGet, validScoutData);
             //get list of data per unquie feature relationship 
             List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDatesConcideringScoutData);
             //get valid scout data to be used as result data
@@ -242,19 +248,25 @@ namespace Spaicial_API.Models
             List<ValidFeatureData> validFeatureDataValues = GetFeatureData(validDatesConcideringScoutData);
             //get valid scout data to be used as result data
             double[] validScoutDataValues = GetScoutData(validScoutData, validDatesConcideringScoutData);
+
             //create current feature weights array
             double[] currentFeatureWeights = GetFeatureWeights();
+
             //create training data matrix
             Matrix<Double> trainingDataMatrix = CreateDataMatrix(validDatesConcideringScoutData, validFeatureDataValues);
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
-            Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale) ;
-            //create array of itial feature values
-            Console.WriteLine(trainingResultData.ToString());
-            double[] intialFeatureWeights = currentFeatureWeights;
+            Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale);
+
+            ////create array of itial feature values
+            //double[] intialFeatureWeights = currentFeatureWeights;
+
+            double[] intialFeatureWeights = new double[currentFeatureWeights.Length];
+            intialFeatureWeights.Populate(0);
+
             //send to learning method to optimise values of feature weights
-            return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData); 
+            return Learning.Learn(intialFeatureWeights, trainingDataMatrix, trainingResultData);
         }
 
         protected double GetPerformanceOfPredictionModel(int numberOfRowsToUse)
@@ -277,18 +289,18 @@ namespace Spaicial_API.Models
             //get scale of predicted data
             double predictionScale = predictedDataSubject.maxValue - predictedDataSubject.minValue;
             //create vectore of result data
-            Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale) ;
+            Vector<Double> trainingResultData = (DenseVector.OfArray(validScoutDataValues) - predictedDataSubject.minValue).Divide(predictionScale);
 
             //send to learning method to optimise values of feature weights
-            return Learning.CostFunction(currentFeatureWeights,trainingDataMatrix,trainingResultData);
+            return Learning.CostFunction(currentFeatureWeights, trainingDataMatrix, trainingResultData);
         }
     }
 
-    public class Trainer :SpaicialML
+    public class Trainer : SpaicialML
     {
-        public Trainer(Zone predictedZone, DataSubject predictedDataSubject):base(predictedZone, predictedDataSubject)
+        public Trainer(Zone predictedZone, DataSubject predictedDataSubject) : base(predictedZone, predictedDataSubject)
         {
-            
+
         }
 
         public double[] GetTrainedFeatureValues(int rowsToUse)
@@ -302,7 +314,7 @@ namespace Spaicial_API.Models
         public double predictionValue;
         public DateTime predictionAge;
 
-        public Predictor(Zone predictedZone, DataSubject predictedDataSubject):base(predictedZone, predictedDataSubject)
+        public Predictor(Zone predictedZone, DataSubject predictedDataSubject) : base(predictedZone, predictedDataSubject)
         {
 
         }
@@ -312,7 +324,7 @@ namespace Spaicial_API.Models
 
             //store unique feature relationships ignoring exponants
             List<FeatureRelationship> featureRelationshps = GetUniqueFeatureRelationships();
-             
+
             if (!featureRelationshps.Any())
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
